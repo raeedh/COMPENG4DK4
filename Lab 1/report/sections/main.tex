@@ -1,0 +1,50 @@
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{{./figures/}}
+\usepackage{parskip}
+\usepackage{titlesec}
+
+\titleformat*{\section}{\large\bfseries}
+%\allowdisplaybreaks
+
+% remove vertical spacing above top figure
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+%
+
+\title{COMPENG 4DK4 Lab 1 Report}
+\author{
+    Aaron Pinto \\
+    pintoa9 \\
+    %L02
+    \and
+    Raeed Hassan \\
+    hassam41 \\
+    %L02
+}
+
+\begin{document}
+
+\maketitle
+\clearpage
+
+\input{random_seeds.tex}
+
+\input{exp2.tex}
+
+\input{exp3.tex}
+
+\input{exp4.tex}
+
+\input{exp5.tex}
+
+\input{exp6.tex}
+
+\input{exp7.tex}
+
+\input{exp8.tex}
+
+\end{document}
