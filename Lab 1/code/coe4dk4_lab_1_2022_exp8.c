@@ -135,7 +135,7 @@ int main() {
             mean_delay = mean_delay + integral_of_n / total_served;
         }
 
-        printf("%f, %f, %f, %f, %f\n", arrival_rates[i], util / NUM_RANDOM_SEEDS, fraction_served / NUM_RANDOM_SEEDS,
+        printf("%f, %f, %f, %f, %f\n", ARRIVAL_RATE, util / NUM_RANDOM_SEEDS, fraction_served / NUM_RANDOM_SEEDS,
                mean_number_system / NUM_RANDOM_SEEDS, mean_delay / NUM_RANDOM_SEEDS);
     }
 
