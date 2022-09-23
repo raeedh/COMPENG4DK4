@@ -1,2 +1,45 @@
 \section*{Experiment 4}
 % Repeat Part 2 but this time set the SERVICE TIME to 30 and vary ARRIVAL RATE over a suitable range. Compare the mean delay vs. ARRIVAL RATE curve to what you obtained before. Plot this curve on a graph with the curve from Part 2. Explain the differences in the curves.
+When setting the \texttt{SERVICE\_TIME} to 30, we similarly adjusted our \texttt{ARRIVAL\_RATE} values by dividing the rates used in experiment 2 by 3. We kept all other parameters the same (including the random number generator seeds) and reran the simulation. A plot of the mean delay vs. arrival rate of both experiments 2 and 4 are shown in Figure~\ref{fig:exp4}. We can see that in this experiment, with a larger service time the mean delay increases significantly faster at the same arrival rates.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
+		width = 0.98\textwidth,
+		%height = 400,
+		xmin = 0, xmax = 0.1,
+		ymin = 0, ymax = 1600,
+		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		legend pos=north east,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp2.dat};
+	\label{plot:exp2}
+	\addlegendentry{Experiment 2}
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp4.dat};
+	\label{plot:exp4}
+	\addlegendentry{Experiment 4}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Mean Delay vs. Arrival Rate}
+\label{fig:exp4}
+\end{figure}
