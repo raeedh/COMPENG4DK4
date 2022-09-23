@@ -70,6 +70,7 @@ int main() {
             int number_in_system = 0;
             double next_arrival_time = 0;
             double next_departure_time = 0;
+            double new_service_time = 0;
 
             /* Data collection variables. */
             long int total_served = 0;
@@ -101,7 +102,8 @@ int main() {
 
                     /* If this customer has arrived to an empty system, start its service right away. */
                     if (number_in_system == 1) {
-                        next_departure_time = clock + SERVICE_TIME;
+                        new_service_time = exponential_generator((double) SERVICE_TIME);
+                        next_departure_time = clock + new_service_time;
                     }
                 } else {
                     /* A customer departure is occuring. */
@@ -113,11 +115,12 @@ int main() {
 
                     number_in_system--;
                     total_served++;
-                    total_busy_time += SERVICE_TIME;
+                    total_busy_time += new_service_time;
 
                     /* If there are other customers waiting, start one in service right away. */
                     if (number_in_system > 0) {
-                        next_departure_time = clock + SERVICE_TIME;
+                        new_service_time = exponential_generator((double) SERVICE_TIME);
+                        next_departure_time = clock + new_service_time;
                     }
 
                     /* Every so often, print an activity message to show we are active. */
