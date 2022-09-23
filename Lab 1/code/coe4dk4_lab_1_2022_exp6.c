@@ -57,7 +57,7 @@ int main() {
         // printf("\nArrival rate = %f\n", arrival_rates[j]);
         int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
                               400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
-        double util, fraction_served, mean_number_system, mean_delay = 0.0;
+        double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0;
 
         // Arrival rate,Random seed,Utilization,Fraction served,Mean number in system,Mean delay
         for (int i = 0; i < 18; i++) {

@@ -66,7 +66,7 @@ int main() {
         for (int j = 0; j < NUM_ARRIVAL_RATES; ++j) {
             const double ARRIVAL_RATE = arrival_rates[j];
 
-            double util, fraction_served, mean_number_system, mean_delay, rejection_probability = 0.0;
+            double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0, rejection_probability = 0.0;
 
             // Arrival rate,Random seed,Utilization,Fraction served,Mean number in system,Mean delay
             for (int k = 0; k < NUM_RANDOM_SEEDS; ++k) {
@@ -104,7 +104,8 @@ int main() {
                         integral_of_n += number_in_system * (clock - last_event_time);
                         last_event_time = clock;
 
-                        if (number_in_system >= MAX_QUEUE_SIZE) {
+                        // Number in queue is number in system - 1
+                        if (number_in_system - 1 >= MAX_QUEUE_SIZE) {
                             total_rejected++;
                         } else {
                             number_in_system++;
@@ -152,13 +153,14 @@ int main() {
 
                 /* Output final results on single line */
                 // printf("\nRandom seed = %d, ", random_seeds[k]);
-                // printf("Utilization = %f, ", total_busy_time/clock);
-                // printf("Fraction served = %f, ", (double) total_served/total_arrived);
-                // printf("Mean number in system = %f, ", integral_of_n/clock);
-                // printf("Mean delay = %f\n", integral_of_n/total_served);
+                // printf("Utilization = %f, ", total_busy_time / clock);
+                // printf("Fraction served = %f, ", (double) total_served / total_arrived);
+                // printf("Mean number in system = %f, ", integral_of_n / clock);
+                // printf("Mean delay = %f\n", integral_of_n / total_served);
 
                 // Output final results on single line
-                // printf("%d, %f, %f, %f, %f         \n", random_seeds[k], total_busy_time/clock, (double) total_served/total_arrived, integral_of_n/clock, integral_of_n/total_served);
+                // printf("%d, %f, %f, %f, %f\n", RANDOM_SEED, total_busy_time / clock, (double) total_served / total_arrived,
+                //        integral_of_n / clock, integral_of_n / total_served);
                 util = util + total_busy_time / clock;
                 fraction_served = fraction_served + (double) total_served / total_arrived;
                 mean_number_system = mean_number_system + integral_of_n / clock;
