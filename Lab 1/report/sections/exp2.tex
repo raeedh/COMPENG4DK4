@@ -6,8 +6,8 @@ If we set \texttt{SERVICE\_TIME} to a value of 10, we need to set $0 < \text{\te
 \begin{tikzpicture}
 	\begin{axis}[
 		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
-		width = 0.95\textwidth,
-		height = 150,
+		width = \textwidth,
+		%height = 150,
 		xmin = 0, xmax = 0.1,
 		ymin = 0, ymax = 550,
 		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
@@ -25,7 +25,7 @@ If we set \texttt{SERVICE\_TIME} to a value of 10, we need to set $0 < \text{\te
 		%{\pgfkeysvalueof{/data point/y}})$%
 		%},
 	]
-	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp2.data};
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp2.dat};
 	\end{axis}
 \end{tikzpicture}
 \caption{Experiment 2: Mean Delay vs. Arrival Rate}
