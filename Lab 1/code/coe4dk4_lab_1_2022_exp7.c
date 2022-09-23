@@ -51,8 +51,8 @@
  */
 
 int main() {
-    const int max_queue_sizes[] = {1, 10, 100};
-    const double arrival_rates[] = {0.001, 0.01, 0.03, 0.05, 0.07, 0.09, 0.095, 0.099};
+    const int max_queue_sizes[] = {1, 10, 100, 1000};
+    const double arrival_rates[] = {0.001, 0.01, 0.1, 1, 10};
     const int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
                                 400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
 
@@ -66,7 +66,7 @@ int main() {
         for (int j = 0; j < NUM_ARRIVAL_RATES; ++j) {
             const double ARRIVAL_RATE = arrival_rates[j];
 
-            double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0, rejection_probability = 0.0;
+            double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0, fraction_rejected = 0.0;
 
             // Arrival rate,Random seed,Utilization,Fraction served,Mean number in system,Mean delay
             for (int k = 0; k < NUM_RANDOM_SEEDS; ++k) {
@@ -119,7 +119,7 @@ int main() {
                             next_departure_time = clock + new_service_time;
                         }
                     } else {
-                        /* A customer departure is occuring. */
+                        /* A customer departure is occurring. */
                         clock = next_departure_time;
 
                         /* Update our statistics. */
@@ -165,7 +165,7 @@ int main() {
                 fraction_served = fraction_served + (double) total_served / total_arrived;
                 mean_number_system = mean_number_system + integral_of_n / clock;
                 mean_delay = mean_delay + integral_of_n / total_served;
-                rejection_probability = rejection_probability + (double) total_rejected / total_arrived;
+                fraction_rejected = fraction_rejected + (double) total_rejected / total_arrived;
 
                 /* Halt the program before exiting. */
                 // printf("Hit Enter to finish ... \n");
@@ -176,7 +176,7 @@ int main() {
 
             printf("%d, %f, %f, %f, %f, %f, %f\n", MAX_QUEUE_SIZE, ARRIVAL_RATE, util / NUM_RANDOM_SEEDS,
                    fraction_served / NUM_RANDOM_SEEDS, mean_number_system / NUM_RANDOM_SEEDS, mean_delay / NUM_RANDOM_SEEDS,
-                   rejection_probability / NUM_RANDOM_SEEDS);
+                   fraction_rejected / NUM_RANDOM_SEEDS);
 
             /* Halt the program before exiting. */
             // printf("Hit Enter to finish ... \n");
