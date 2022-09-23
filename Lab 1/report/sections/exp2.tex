@@ -1,1 +1,33 @@
 \section*{Experiment 2}
+If we set \texttt{SERVICE\_TIME} to a value of 10, we need to set $0 < \text{\texttt{ARRIVAL\_RATE}} < 0.1$ to satisfy $0 < \text{\texttt{ARRIVAL\_RATE}} \times \text{\texttt{SERVICE\_TIME}} < 1$. We selected the following values for \texttt{ARRIVAL\_RATE}: 0.001, 0.01, 0.03, 0.05, 0.07, 0.09, 0.095, 0.099. We doubled the variable \texttt{NUMBER\_TO\_SERVE} from the default to \num{50e6} to \num{100e6}. We modified the provided code to run to loop through each arrival rate with all 18 random number generator seeds, and print out the average results of the seeds for each arrival rate. A plot of the average mean delay vs. arrival rate is shown in Figure~\ref{fig:exp2}. At low arrival rate values, we see the mean delay approach 10. This is because at low arrival rates
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
+		width = 0.95\textwidth,
+		height = 150,
+		xmin = 0, xmax = 0.1,
+		ymin = 0, ymax = 550,
+		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
+		xticklabel style={
+        /pgf/number format/fixed,
+        /pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp2.data};
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 2: Mean Delay vs. Arrival Rate}
+\label{fig:exp2}
+\end{figure}
