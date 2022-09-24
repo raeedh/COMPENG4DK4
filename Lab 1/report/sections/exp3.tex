@@ -1,3 +1,35 @@
 \section*{Experiment 3}
 % What happens when the product of ARRIVAL RATE and SERVICE TIME, in Expression 1 is greater than 1? To see, set ARRIVAL RATE slightly greater than 1/SERVICE TIME, then do a run of 10,000 customers. What happens when you keep increasing the run length? Explain why is this happening. Explain why the condition in Expression 1 is necessary.
-As we increase the arrival rate such that the product of \texttt{ARRIVAL\_RATAE} and \texttt{SERVICE\_TIME} exceeds 1, we see the fraction of customers served begins to drop.
+We kept the same value of \texttt{SERVICE\_TIME} and increased the \texttt{ARRIVAL\_RATE} to 0.2, such that the product of \texttt{SERVICE\_TIME} $\times$ \texttt{ARRIVAL\_RATE} $= 2$. At 10,000 customers served the mean delay has increased to over 50,000, significantly more than largest value seen when the arrival rate was $<0.1$.
+% What happens when you keep increasing the run length?
+As we increase the run length (number of customers to serve), the mean delay begins to increase proportionally with the number of customers to serve as seen in Table~\ref{table:exp3arr2}.
+% Explain why is this happening.
+As the system becomes saturated, every customer entering the system will enter a queue and will need to wait a mean delay that is proportional to the number of customers already waiting in queue (each additional customer increases the mean delay by the same amount).
+% Explain why the condition in Expression 1 is necessary.
+The condition in Expression 1 is necessary to prevent such a scenario where increasing the number of customers will affect the mean delay, unlike the case where the arrival rate satisfies Expression 1. For example, we can see in Table~\ref{table:exp3arr5} that the mean delay is not affected by the number of customers to serve. Satisfying this condition also ensures that we are able to empty out the queue and reach a steady state, otherwise the server will never be able to catchup as more customers arrive than the server can service.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}\hline
+	Number of Customers to Serve & Mean Delay    \\\hline
+	10000                        & 50160.191256  \\\hline
+	20000                        & 99962.602135  \\\hline
+	50000                        & 249997.485025 \\\hline
+	100000                       & 499914.794732 \\\hline
+\end{tabular}
+\caption{Experiment 3: Mean Delay when Arrival Rate $= 0.2$}
+\label{table:exp3arr2}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|l|}\hline
+		Number of Customers to Serve & Mean Delay \\\hline
+		10000                        & 14.989001  \\\hline
+		20000                        & 14.989132  \\\hline
+		50000                        & 14.982623  \\\hline
+		100000                       & 14.972480  \\\hline
+	\end{tabular}         
+	\caption{Experiment 3: Mean Delay when Arrival Rate $= 0.05$}
+	\label{table:exp3arr5}
+\end{table}
