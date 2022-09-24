@@ -5,13 +5,13 @@ In this case, the queue acts as a slight bottleneck, and we see that the rejecti
 When the arrival rate upper limit is not satisfied, the infinite queue has a much higher mean delay for those arrival rates, compared to the finite queue.
 The mean delay asymptote value as the arrival rate becomes large, is the \texttt{SERVICE\_TIME} $\times$ \texttt{MAX\_QUEUE\_SIZE}.
 
-\begin{figure}[h]
+\begin{figure}[htp]
 \centering
 \begin{tikzpicture}
 	\begin{axis}[
 		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
 		width = 0.98\textwidth,
-		height = 350,
+		height = 340,
 		xmin = 0, xmax = 1,
 		ymin = 0, ymax = 1050,
 		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
@@ -50,13 +50,13 @@ The mean delay asymptote value as the arrival rate becomes large, is the \texttt
 \label{fig:exp7}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htp]
 \centering
 \begin{tikzpicture}
 	\begin{axis}[
 		title = {Rejection Fraction vs. \texttt{ARRIVAL\_RATE}},
 		width = 0.98\textwidth,
-		height = 350,
+		height = 380,
 		xmin = 0, xmax = 1,
 		ymin = 0, ymax = 1,
 		ylabel = Rejection Fraction, xlabel = \texttt{ARRIVAL\_RATE},

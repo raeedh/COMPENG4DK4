@@ -2,13 +2,14 @@
 % Start with the original version of the code with SERVICE TIME set to 10. Modify the code so that instead of Poisson process arrivals, the time between arrivals is fixed with a value equal to 1/ARRIVAL RATE, i.e., the time between successive arrivals is always the same. Repeat Parts 2 and 3 above. Explain why you get such a different mean delay vs. ARRIVAL RATE curve. Explain the shape of the curve by drawing an example of what is happening in time.
 When we make the arrival rate 0.2, we see that the \texttt{fraction\_served} becomes 0.5. The mean delay vs arrival rate curve becomes a horizontal line as the mean delays are proportional to the \texttt{NUM\_SERVED} and not the arrival rates.
 This is because as the system becomes saturated, every customer entering the system will enter a queue and will need to wait the same amount of time, defined by the service time, because the rate at which customers are arriving and departing is the same.
-\begin{figure}[h]
+
+\begin{figure}[htp]
 \centering
 \begin{tikzpicture}
 	\begin{axis}[
 		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
 		width = 0.98\textwidth,
-		height = 200,
+		height = 180,
 		xmin = 0, xmax = 0.1,
 		ymin = 0, ymax = 15,
 		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
