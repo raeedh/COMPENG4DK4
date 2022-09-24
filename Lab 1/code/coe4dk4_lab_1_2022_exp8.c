@@ -32,9 +32,9 @@
  */
 
 //#define RANDOM_SEED 5259140
-#define NUMBER_TO_SERVE 100e6
+#define NUMBER_TO_SERVE 100000
 
-#define SERVICE_TIME 10
+#define SERVICE_TIME 10.0
 
 #define BLIP_RATE 10000
 
@@ -50,7 +50,7 @@
  */
 
 int main() {
-    const double arrival_rates[] = {0.001, 0.01, 0.03, 0.05, 0.07, 0.09, 0.095, 0.099};
+    const double arrival_rates[] = {0.2};
     const int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
                                 400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
 
