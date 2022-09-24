@@ -34,10 +34,10 @@
 //#define RANDOM_SEED 5259140
 #define NUMBER_TO_SERVE 100e6
 
-#define SERVICE_TIME 10
+#define SERVICE_TIME 10.0
 //#define ARRIVAL_RATE 0.1
 
-#define BLIP_RATE 1000000
+#define BLIP_RATE 100000000
 
 /*******************************************************************************/
 
@@ -52,7 +52,7 @@
 
 int main() {
     const int max_queue_sizes[] = {1, 10, 100, 1000};
-    const double arrival_rates[] = {0.001, 0.01, 0.1, 1, 10};
+    const double arrival_rates[] = {0.001, 0.01, 0.1, 1};
     const int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
                                 400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
 
@@ -65,6 +65,7 @@ int main() {
 
         for (int j = 0; j < NUM_ARRIVAL_RATES; ++j) {
             const double ARRIVAL_RATE = arrival_rates[j];
+            const double INTER_ARRIVAL_TIME = 1.0 / ARRIVAL_RATE;
 
             double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0, fraction_rejected = 0.0;
 
@@ -98,7 +99,7 @@ int main() {
                     if (number_in_system == 0 || next_arrival_time < next_departure_time) {
                         /* A new arrival is occurring. */
                         clock = next_arrival_time;
-                        next_arrival_time = clock + exponential_generator((double) 1 / ARRIVAL_RATE);
+                        next_arrival_time = clock + exponential_generator(INTER_ARRIVAL_TIME);
 
                         /* Update our statistics. */
                         integral_of_n += number_in_system * (clock - last_event_time);
@@ -115,7 +116,7 @@ int main() {
 
                         /* If this customer has arrived to an empty system, start its service right away. */
                         if (number_in_system == 1) {
-                            new_service_time = exponential_generator((double) SERVICE_TIME);
+                            new_service_time = exponential_generator(SERVICE_TIME);
                             next_departure_time = clock + new_service_time;
                         }
                     } else {
@@ -132,55 +133,29 @@ int main() {
 
                         /* If there are other customers waiting, start one in service right away. */
                         if (number_in_system > 0) {
-                            new_service_time = exponential_generator((double) SERVICE_TIME);
+                            new_service_time = exponential_generator(SERVICE_TIME);
                             next_departure_time = clock + new_service_time;
                         }
 
                         /* Every so often, print an activity message to show we are active. */
-                        //                        if (total_served % BLIP_RATE == 0) {
-                        //                            printf("Max Queue Size = %d, Arrival rate = %f, Random seed = %d, Customers served = %ld, Customers rejected = "
-                        //                                   "%ld (Total arrived = %ld)\r",
-                        //                                   MAX_QUEUE_SIZE, ARRIVAL_RATE, RANDOM_SEED, total_served, total_rejected, total_arrived);
-                        //                        }
+                        if (total_served % BLIP_RATE == 0) {
+                            printf("Max Queue Size = %d, Arrival rate = %f, Random seed = %d, Customers served = %ld, Customers rejected = "
+                                   "%ld (Total arrived = %ld)\r",
+                                   MAX_QUEUE_SIZE, ARRIVAL_RATE, RANDOM_SEED, total_served, total_rejected, total_arrived);
+                        }
                     }
                 }
 
-                /* Output final results. */
-                // printf("Utilization = %f\n", total_busy_time/clock);
-                // printf("Fraction served = %f\n", (double) total_served/total_arrived);
-                // printf("Mean number in system = %f\n", integral_of_n/clock);
-                // printf("Mean delay = %f\n", integral_of_n/total_served);
-
-                /* Output final results on single line */
-                // printf("\nRandom seed = %d, ", random_seeds[k]);
-                // printf("Utilization = %f, ", total_busy_time / clock);
-                // printf("Fraction served = %f, ", (double) total_served / total_arrived);
-                // printf("Mean number in system = %f, ", integral_of_n / clock);
-                // printf("Mean delay = %f\n", integral_of_n / total_served);
-
-                // Output final results on single line
-                // printf("%d, %f, %f, %f, %f\n", RANDOM_SEED, total_busy_time / clock, (double) total_served / total_arrived,
-                //        integral_of_n / clock, integral_of_n / total_served);
                 util = util + total_busy_time / clock;
                 fraction_served = fraction_served + (double) total_served / total_arrived;
                 mean_number_system = mean_number_system + integral_of_n / clock;
                 mean_delay = mean_delay + integral_of_n / total_served;
                 fraction_rejected = fraction_rejected + (double) total_rejected / total_arrived;
-
-                /* Halt the program before exiting. */
-                // printf("Hit Enter to finish ... \n");
-                // getchar();
-
-                // return 0;
             }
 
             printf("%d, %f, %f, %f, %f, %f, %f\n", MAX_QUEUE_SIZE, ARRIVAL_RATE, util / NUM_RANDOM_SEEDS,
                    fraction_served / NUM_RANDOM_SEEDS, mean_number_system / NUM_RANDOM_SEEDS, mean_delay / NUM_RANDOM_SEEDS,
                    fraction_rejected / NUM_RANDOM_SEEDS);
-
-            /* Halt the program before exiting. */
-            // printf("Hit Enter to finish ... \n");
-            // getchar();
         }
     }
 
