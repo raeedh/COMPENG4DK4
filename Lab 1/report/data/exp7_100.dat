@@ -1,0 +1,6 @@
+# Arrival Rate		Utilization		Fraction served		Mean number in system		Mean delay	Rejection Fraction
+$arr_rate$	$util$	$frac_served$	$mean_num$	$mean_delay$	$rej_frac$
+0.001000	0.009999	1.000000	0.010100	10.098887	0.000000
+0.010000	0.099994	1.000000	0.111093	11.107911	0.000000
+0.100000	0.990210	0.990209	50.497832	509.890769	0.009790
+1.000000	1.000000	0.099999	100.888966	1008.745280	0.900001

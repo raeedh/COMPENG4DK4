@@ -3,4 +3,94 @@
 For arrival rates where the upper limit in Expression 1 is satisfied, the results are the same between the infinite and finite queue cases, except for when the queue length is very small (1 in our experiment).
 In this case, the queue acts as a slight bottleneck, and we see that the rejection fraction is non-zero (although still very small).
 When the arrival rate upper limit is not satisfied, the infinite queue has a much higher mean delay for those arrival rates, compared to the finite queue.
-The mean delay asymptote value as the arrival rate becomes large, is the \texttt{SERVICE_TIME} * \texttt{MAX_QUEUE_SIZE}.
+The mean delay asymptote value as the arrival rate becomes large, is the \texttt{SERVICE\_TIME} $\times$ \texttt{MAX\_QUEUE\_SIZE}.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
+		width = 0.98\textwidth,
+		height = 350,
+		xmin = 0, xmax = 1,
+		ymin = 0, ymax = 1050,
+		ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp7_1.dat};
+	\label{plot:exp7_1}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 1}
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp7_10.dat};
+	\label{plot:exp7_10}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 10}
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp7_100.dat};
+	\label{plot:exp7_100}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 100}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 7: Mean Delay at Various Queue Sizes}
+\label{fig:exp7}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Rejection Fraction vs. \texttt{ARRIVAL\_RATE}},
+		width = 0.98\textwidth,
+		height = 350,
+		xmin = 0, xmax = 1,
+		ymin = 0, ymax = 1,
+		ylabel = Rejection Fraction, xlabel = \texttt{ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$rej_frac$, x=$arr_rate$]{../data/exp7_1.dat};
+	\label{plot:exp7_1}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 1}
+	\addplot table [y=$rej_frac$, x=$arr_rate$]{../data/exp7_10.dat};
+	\label{plot:exp7_10}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 10}
+	\addplot table [y=$rej_frac$, x=$arr_rate$]{../data/exp7_100.dat};
+	\label{plot:exp7_100}
+	\addlegendentry{\texttt{MAX\_QUEUE\_SIZE} = 100}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 7: Rejection Fraaction at Various Queue Sizes}
+\label{fig:exp7_2}
+\end{figure}
