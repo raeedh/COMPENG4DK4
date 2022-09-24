@@ -1,5 +1,48 @@
 \section*{Experiment 6}
 % Modify the program so that instead of M/D/1 you simulate an M/M/1 queuing system, i.e., instead of Poisson process arrivals and fixed service times, we now have Poisson process arrivals and exponentially distributed service times with the same mean of SERVICE TIME i.e., When the program needs a service time, exponential generator((double)SERVICE TIME); will return an exponentially distributed service time with the proper mean5. Repeat Part 2 above using the same value of SERVICE TIME. Plot the mean delay vs. ARRIVAL RATE for the M/D/1 and M/M/1 cases on the same graph. Explain the differences and similarities. Repeat Part 5, using Equation 2 for an M/M/1 system. Give a simple expression for dM/M/1.
+To simulate a M/M/1 queuing system instead of a M/D/1 system, we modified the program by making the service time an exponentially distributed number instead of a constant time. This exponentially distributed service time is stored in the variable \texttt{new\_service\_time}, and we update this variable by using the \texttt{exponential\_generator} exponential number generator function provided in \texttt{simlib.c}. The modifications to the code can be seen in Listing~\ref{list:exp6}.
+
+% Plot the mean delay vs. ARRIVAL RATE for the M/D/1 and M/M/1 cases on the same graph. Explain the differences and similarities.
+We compare the plots of mean delay vs. arrival rate for the M/D/1 and M/M/1 cases in Figure~\ref{fig:exp6}. We can see the mean delay for the M/M/1 system increases faster than the M/D/1 system, especially as we approach the upper bound of the arrival rate. The two plots still showcase the same type of exponential growth, but the M/M/1 system seems to be scaled up by some amount (the mean delay in the M/M/1 system is roughly double at arrival rates close to 0.1).
+
+% Repeat Part 5, using Equation 2 for an M/M/1 system. Give a simple expression for dM/M/1.
+From the expression for an M/G/1 system given in Expression~\ref{eq:eq3}, we can derive the expression for $\overline{d}_{M/M/1}$.
+\begin{equation}
+	\overline{d}_{M/G/1}=\overline{X} + \frac{\lambda\overline{X^2}}{2(1-\rho)}
+	\label{eq:eq3}
+\end{equation}
+For exponential distributions, $\sigma^2$ is equal to the mean, therefore $\sigma^2_X = \overline{X}$ and $\overline{X^2} = \sigma^2_X + \bar{X}^2 = 2\bar{X}^2$. From this we can derive the expression for $\overline{d}_{M/M/1}$:
+\begin{align}
+	\overline{d}_{M/M/1} &= \overline{X} + \frac{\lambda\overline{X^2}}{2(1-\rho)} \nonumber\\
+	&= \overline{X} + \frac{2\lambda\bar{X}^2}{2(1-\rho)} \nonumber\\
+	&= \overline{X} + \frac{\rho\overline{X}}{1-\rho} \nonumber\\
+	&= \frac{\overline{X} - \rho\overline{X} + \rho\overline{X}}{1-\rho} \nonumber\\
+	&= \frac{\overline{X}}{1-p}
+\end{align}
+
+\begin{lstlisting}[gobble=8, language=C, caption={Modifications to Experiment 6 Code}, label={list:exp6}, numbers=none][h]
+	/* System state variables. */
+	int number_in_system = 0;
+	double next_arrival_time = 0;
+	double next_departure_time = 0;
+	double new_service_time = 0;
+
+	/* If this customer has arrived to an empty system, start its service right away. */
+	if (number_in_system == 1) {
+		new_service_time = exponential_generator((double) SERVICE_TIME);
+		next_departure_time = clock + new_service_time;
+	}
+
+	number_in_system--;
+	total_served++;
+	total_busy_time += new_service_time;
+
+	/* If there are other customers waiting, start one in service right away. */
+	if (number_in_system > 0) {
+		new_service_time = exponential_generator((double) SERVICE_TIME);
+		next_departure_time = clock + new_service_time;
+	}
+\end{lstlisting}
 
 \begin{figure}[h]
 	\centering
@@ -7,7 +50,7 @@
 		\begin{axis}[
 			title = {Mean Delay vs. \texttt{ARRIVAL\_RATE}},
 			width = 0.98\textwidth,
-			%height = 400,
+			height = 350,
 			xmin = 0, xmax = 0.1,
 			ymin = 0, ymax = 1050,
 			ylabel = Mean Delay, xlabel = \texttt{ARRIVAL\_RATE},
@@ -33,12 +76,18 @@
 		]
 		\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp2.dat};
 		\label{plot:exp6mmi}
-		\addlegendentry{M/D/I}
+		\addlegendentry{M/D/1}
 		\addplot table [y=$mean_delay$, x=$arr_rate$]{../data/exp6.dat};
 		\label{plot:exp6mdi}
-		\addlegendentry{M/M/I}
+		\addlegendentry{M/M/1}
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Experiment 6: Mean Delay vs. Arrival Rate}
 	\label{fig:exp6}
-	\end{figure}
+\end{figure}
+
+% idk how to fix the indentation on this so
+%\lstinputlisting[caption={test}, linerange={70-73}]{coe4dk4_lab_1_2022_exp6.c}
+%\lstinputlisting[caption={test}, linerange={103-107}]{coe4dk4_lab_1_2022_exp6.c}
+%\lstinputlisting[caption={test}, linerange={116-118}]{coe4dk4_lab_1_2022_exp6.c}
+%\lstinputlisting[caption={test}, linerange={120-124}]{coe4dk4_lab_1_2022_exp6.c}
