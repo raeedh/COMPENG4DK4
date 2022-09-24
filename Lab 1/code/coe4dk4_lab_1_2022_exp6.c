@@ -37,7 +37,7 @@
 #define SERVICE_TIME 10
 //#define ARRIVAL_RATE 0.1
 
-#define BLIP_RATE 10000
+#define BLIP_RATE 100000000
 
 /*******************************************************************************/
 
@@ -51,18 +51,21 @@
  */
 
 int main() {
-    double arrival_rates[] = {0.001, 0.01, 0.03, 0.05, 0.07, 0.09, 0.095, 0.099};
+    const double arrival_rates[] = {0.001, 0.01, 0.03, 0.05, 0.07, 0.09, 0.095, 0.099};
+    const int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
+                                400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
 
-    for (int j = 0; j < 8; j++) {
-        // printf("\nArrival rate = %f\n", arrival_rates[j]);
-        int random_seeds[] = {400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882,   40018820,
-                              400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063};
+    const int NUM_ARRIVAL_RATES = sizeof(arrival_rates) / sizeof(double);
+    const int NUM_RANDOM_SEEDS = sizeof(random_seeds) / sizeof(int);
+
+    for (int i = 0; i < NUM_ARRIVAL_RATES; i++) {
+        const double ARRIVAL_RATE = arrival_rates[i];
+
         double util = 0.0, fraction_served = 0.0, mean_number_system = 0.0, mean_delay = 0.0;
 
         // Arrival rate,Random seed,Utilization,Fraction served,Mean number in system,Mean delay
-        for (int i = 0; i < 18; i++) {
-            int RANDOM_SEED = random_seeds[i];
-            double ARRIVAL_RATE = arrival_rates[j];
+        for (int j = 0; j < NUM_RANDOM_SEEDS; j++) {
+            const int RANDOM_SEED = random_seeds[j];
 
             double clock = 0; /* Clock keeps track of simulation time. */
 
@@ -82,7 +85,6 @@ int main() {
 
             /* Set the seed of the random number generator. */
             random_generator_initialize(RANDOM_SEED);
-            // random_generator_initialize(random_seeds[i]);
 
             /* Process customers until we are finished. */
             while (total_served < NUMBER_TO_SERVE) {
@@ -124,45 +126,21 @@ int main() {
                     }
 
                     /* Every so often, print an activity message to show we are active. */
-                    //                    if (total_served % BLIP_RATE == 0)
-                    //                        printf("Arrival rate = %f, Random seed = %d, Customers served = %ld (Total arrived = %ld)\r", ARRIVAL_RATE,
-                    //                               RANDOM_SEED, total_served, total_arrived);
+                    if (total_served % BLIP_RATE == 0) {
+                        printf("Arrival rate = %f, Random seed = %d, Customers served = %ld (Total arrived = %ld)\n", ARRIVAL_RATE,
+                               RANDOM_SEED, total_served, total_arrived);
+                    }
                 }
             }
 
-            /* Output final results. */
-            // printf("Utilization = %f\n", total_busy_time/clock);
-            // printf("Fraction served = %f\n", (double) total_served/total_arrived);
-            // printf("Mean number in system = %f\n", integral_of_n/clock);
-            // printf("Mean delay = %f\n", integral_of_n/total_served);
-
-            /* Output final results on single line */
-            // printf("\nRandom seed = %d, ", random_seeds[i]);
-            // printf("Utilization = %f, ", total_busy_time/clock);
-            // printf("Fraction served = %f, ", (double) total_served/total_arrived);
-            // printf("Mean number in system = %f, ", integral_of_n/clock);
-            // printf("Mean delay = %f\n", integral_of_n/total_served);
-
-            // Output final results on single line
-            // printf("%d, %f, %f, %f, %f         \n", random_seeds[i], total_busy_time/clock, (double) total_served/total_arrived, integral_of_n/clock, integral_of_n/total_served);
             util = util + total_busy_time / clock;
             fraction_served = fraction_served + (double) total_served / total_arrived;
             mean_number_system = mean_number_system + integral_of_n / clock;
             mean_delay = mean_delay + integral_of_n / total_served;
-
-            /* Halt the program before exiting. */
-            // printf("Hit Enter to finish ... \n");
-            // getchar();
-
-            // return 0;
         }
 
-        printf("%f, %f, %f, %f, %f     \n", arrival_rates[j], util / 18.0, fraction_served / 18.0, mean_number_system / 18.0,
-               mean_delay / 18.0);
-
-        /* Halt the program before exiting. */
-        // printf("Hit Enter to finish ... \n");
-        // getchar();
+        printf("%f, %f, %f, %f, %f\n", ARRIVAL_RATE, util / NUM_RANDOM_SEEDS, fraction_served / NUM_RANDOM_SEEDS,
+               mean_number_system / NUM_RANDOM_SEEDS, mean_delay / NUM_RANDOM_SEEDS);
     }
 
     return 0;
