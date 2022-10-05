@@ -1,0 +1,32 @@
+\section*{Experiment 2}
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+		width = \textwidth,
+		%height = 150,
+		xmin = 0, xmax = 2000,
+		ymin = 0, ymax = 10.5,
+		ylabel = Mean Delay (msec), xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$mean_delay$, x=$arr_rate$]{./data/exp2.dat};
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 2: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp2}
+\end{figure}
