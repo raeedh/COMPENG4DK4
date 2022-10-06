@@ -66,6 +66,7 @@ int main(void) {
 
         simulation_run = simulation_run_new(); /* Create a new simulation run. */
 
+        double arr[3] = {0.0, 0.0, 0.0};
         /*
      * Set the simulation_run data pointer to our data object.
      */
@@ -107,16 +108,17 @@ int main(void) {
 
         while (data.number_of_packets_processed < RUNLENGTH) {
             simulation_run_execute_event(simulation_run);
+            check_delay(simulation_run, arr);
         }
 
         /*
      * Output results and clean up after ourselves.
      */
 
-        output_results(simulation_run);
+        output_results(simulation_run, arr);
         cleanup_memory(simulation_run);
     }
 
-    getchar(); /* Pause before finishing. */
+    // getchar(); /* Pause before finishing. */
     return 0;
 }

@@ -62,23 +62,46 @@ void output_progress_msg_to_screen(Simulation_Run_Ptr simulation_run) {
  * collected statistics on the screen.
  */
 
-void output_results(Simulation_Run_Ptr simulation_run) {
+void output_results(Simulation_Run_Ptr simulation_run, const double arr[]) {
     double xmtted_fraction;
     Simulation_Run_Data_Ptr data;
 
     data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
 
-    printf("\n");
-    printf("Random Seed = %d \n", data->random_seed);
-    printf("Packet arrival count = %ld \n", data->arrival_count);
+    //    printf("\n");
+    // printf("Random Seed = %d \n", data->random_seed);
+    // printf("Packet arrival count = %ld \n", data->arrival_count);
 
     xmtted_fraction = (double) data->number_of_packets_processed / data->arrival_count;
 
-    printf("Transmitted packet count  = %ld (Service Fraction = %.5f)\n", data->number_of_packets_processed, xmtted_fraction);
+    // printf("Transmitted packet count  = %ld (Service Fraction = %.5f)\n", data->number_of_packets_processed, xmtted_fraction);
 
-    printf("Arrival rate = %.3f packets/second \n", (double) PACKET_ARRIVAL_RATE);
+    // printf("Arrival rate = %.3f packets/second \n", (double) PACKET_ARRIVAL_RATE);
 
-    printf("Mean Delay (msec) = %.2f \n", 1e3 * data->accumulated_delay / data->number_of_packets_processed);
+    // printf("Mean Delay (msec) = %.2f \n", 1e3 * data->accumulated_delay / data->number_of_packets_processed);
+    printf("Packets with Delay > 20 msec = %.2f\n", 1e2 * arr[0] / data->number_of_packets_processed);
 
-    printf("\n");
+    //    printf("\n");
+}
+
+void check_delay(Simulation_Run_Ptr simulation_run, double arr[]) {
+    Simulation_Run_Data_Ptr data;
+
+    data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+    // Get current packet and time
+    double a = 1e3 * data->accumulated_delay;
+    int b = data->number_of_packets_processed;
+
+    // Check if num packets has changed
+    if (arr[1] + 1 == b) {
+        // Check if change in time is greater than 20 (packet delay > 20 msec)
+        if (a > arr[2] + 20) {
+            arr[0]++;
+        }
+
+        // Update with new packet and time
+        arr[1] = b;
+        arr[2] = a;
+    }
 }
