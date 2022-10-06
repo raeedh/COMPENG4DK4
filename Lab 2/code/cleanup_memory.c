@@ -41,8 +41,15 @@ void cleanup_memory(Simulation_Run_Ptr simulation_run) {
 
     data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
     buffer = data->buffer;
-    link = data->link;
 
+    // Free link 1
+    link = data->link1;
+    if (link->state == BUSY) /* Clean out the server. */
+        xfree(server_get(link));
+    xfree(link);
+
+    // Free link 2
+    link = data->link2;
     if (link->state == BUSY) /* Clean out the server. */
         xfree(server_get(link));
     xfree(link);

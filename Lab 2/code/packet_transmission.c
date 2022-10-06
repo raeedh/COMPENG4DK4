@@ -76,7 +76,7 @@ void end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void *link
     data->accumulated_delay += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
 
     /* Output activity blip every so often. */
-    // output_progress_msg_to_screen(simulation_run);
+    //    output_progress_msg_to_screen(simulation_run);
 
     /* This packet is done ... give the memory back. */
     xfree((void *) this_packet);

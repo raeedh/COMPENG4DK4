@@ -88,7 +88,8 @@ int main(void) {
      */
 
         data.buffer = fifoqueue_new();
-        data.link = server_new();
+        data.link1 = server_new();
+        data.link2 = server_new();
 
         /*
      * Set the random number generator seed for this run.
@@ -108,7 +109,7 @@ int main(void) {
 
         while (data.number_of_packets_processed < RUNLENGTH) {
             simulation_run_execute_event(simulation_run);
-            check_delay(simulation_run, arr);
+            //            check_delay(simulation_run, arr);
         }
 
         /*

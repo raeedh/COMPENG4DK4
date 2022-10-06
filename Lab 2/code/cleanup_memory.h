@@ -28,11 +28,12 @@
 
 /******************************************************************************/
 
+#include "simlib.h"
 /*
  * Function prototypes
  */
 
-void cleanup_memory(Simulation_Run_Ptr);
+void cleanup_memory(Simulation_Run_Ptr simulation_run);
 
 /******************************************************************************/
 
