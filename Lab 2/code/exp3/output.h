@@ -1,7 +1,7 @@
 
 /*
  * 
- * Simulation of A Single Server Queueing System
+ * Simulation_Run of A Single Server Queueing System
  * 
  * Copyright (C) 2014 Terence D. Todd Hamilton, Ontario, CANADA,
  * todd@mcmaster.ca
@@ -23,22 +23,26 @@
 
 /******************************************************************************/
 
-#ifndef _SIMPARAMETERS_H_
-#define _SIMPARAMETERS_H_
+#ifndef _OUTPUT_H_
+#define _OUTPUT_H_
 
 /******************************************************************************/
 
-#define PACKET_ARRIVAL_RATE 401 /* packets per second */
-#define PACKET_LENGTH 2000      /* bits */
-#define LINK_BIT_RATE 1e6       /* bits per second */
-#define RUNLENGTH 10e6          /* packets */
-
-/* Comma separated list of random seeds to run. */
-#define RANDOM_SEED_LIST 400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882, 40018820, 400190637, 1906374, 19063740, 190637400, 906374001, 63740019,  637400190, 374001906, 740019063
-
-#define PACKET_XMT_TIME ((double) PACKET_LENGTH / LINK_BIT_RATE)
-#define BLIPRATE (RUNLENGTH / 1000)
+#include "main.h"
+#include "trace.h"
 
 /******************************************************************************/
 
-#endif /* simparameters.h */
+/*
+ * Function prototypes
+ */
+
+void output_progress_msg_to_screen(Simulation_Run_Ptr);
+
+void output_results(Simulation_Run_Ptr, int arr[]);
+
+void check_delay(Simulation_Run_Ptr, int arr[]);
+
+/******************************************************************************/
+
+#endif /* output.h */
