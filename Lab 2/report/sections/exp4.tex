@@ -1,12 +1,19 @@
 \section*{Experiment 4}
 % Assume that we have a system as in Part 2 except that now there are two identical transmission links serving the same queue (This can be modelled as an M/D/2 queueing system). However, each of the links operates at 500 Kbps (i.e., half the bit rate compared to the single link in Part 2). The two links are always busy transmitting whenever packets are available, i.e., whenever either of the links becomes idle, a packet is taken into service from the front of the buffer, if one is available, and begins transmission. Modify the program to simulate this system. Make any other reasonable assumptions. Compare the mean delay versus throughput performance with that of the system in Part 2.
 
-A plot of the mean delay vs.\ packet arrival rate is shown in Figure~\ref{fig:exp4}.
-At low packet arrival rate values, we see the mean delay approaches 1.0 msec.
-The mean delay axis intercept at these low packet arrival rates equal to the packet length divided by the link bit rate, in this experiment this is 500 bits divided by 500 bits per msec, or 1.0 msec.
-If we compare it to experiment 2, we can see that adding the 2nd link decreases the rate of mean delay growth as the packet arrival rate values increase.
-Although, similar to Lab 1, we can observe that the mean delay growth is still exponential as we begin to increase the packet arrival rate.
+To achieve this M/D/2 queueing system, the \texttt{packet\_arrival\_event} in \texttt{packet\_arrival.c} was modified with the changes in Listing~\ref{list:exp4} which adds an additional link. A plot of the mean delay vs. packet arrival rate is shown in Figure~\ref{fig:exp4}. At low packet arrival rate values, we see the mean delay approaches 1.0 msec. The mean delay axis intercept at these low packet arrival rates equal to the packet length divided by the link bit rate, in this experiment this is 500 bits divided by 500 bits per msec, or 1.0 msec. If we compare it to experiment 2, we can see that adding the 2nd link decreases the rate of mean delay growth as the packet arrival rate values increase. Although, similar to Lab 1, we can observe that the mean delay growth is still exponential as we begin to increase the packet arrival rate.
 
+\begin{lstlisting}[language=C, caption={Modifications to Experiment 4 Code}, label={list:exp4}][htp]
+    if (server_state(data->link1) == BUSY) {
+        if (server_state(data->link2) == BUSY) {
+            fifoqueue_put(data->buffer, (void *) new_packet);
+        } else {
+            start_transmission_on_link(simulation_run, new_packet, data->link2);
+        }
+    } else {
+        start_transmission_on_link(simulation_run, new_packet, data->link1);
+    }
+\end{lstlisting}
 
 \begin{figure}[htp]
     \centering
