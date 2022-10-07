@@ -9,6 +9,10 @@ Otherwise, if the packet was transmitted on link 2 or 3, we add the transmission
 We also start another transmission on the respective link that the old packet was transmitted on, if there's any packets left in the queue.
 
 A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
+When the probability is = 0.5, the packets from switch 1 are evenly distributed between switches 2 and 3, so we get the minimum delay then.
+As the probability increases towards 1.0, more packets are sent to switch 2, so the mean delay of that switch increases, while the mean delay on switch 3 decreases.
+The mean delay at switch 1 also increases because more of the packets are sent to switch 2, which has an increased mean delay as well.
+The graph is mirrored over the probability of 0.5 because the majority number of packets just get sent to switch 3, which is the exact same specification as switch 2 so the performance is the same.
 
 \begin{lstlisting}[language=C, caption={Modifications to Experiment 5 Code}, label={list:exp5}][htp]
 if (link_id == 1) {
