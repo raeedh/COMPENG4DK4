@@ -37,13 +37,13 @@
  * packet_arrival.c) is executed. An object can be attached to the event and
  * can be recovered in packet_arrival.c.
  */
-
-long int schedule_packet_arrival_event(Simulation_Run_Ptr simulation_run, double event_time) {
+long int schedule_packet_arrival_event(Simulation_Run_Ptr simulation_run, double event_time, int link_id) {
     Event event;
 
     event.description = "Packet Arrival";
     event.function = packet_arrival_event;
     event.attachment = (void *) NULL;
+    event.attachment2 = link_id;
 
     return simulation_run_schedule_event(simulation_run, event, event_time);
 }
@@ -56,39 +56,49 @@ long int schedule_packet_arrival_event(Simulation_Run_Ptr simulation_run, double
  * queue if the server is busy. Otherwise it starts the transmission of the
  * packet. It then schedules the next packet arrival event.
  */
-
-void packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
+void packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr, int link_id) {
     Simulation_Run_Data_Ptr data;
     Packet_Ptr new_packet;
 
     data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
-    data->arrival_count++;
 
     new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
     new_packet->arrive_time = simulation_run_get_time(simulation_run);
-    new_packet->service_time = get_packet_transmission_time();
+    new_packet->service_time = get_packet_transmission_time(link_id);
     new_packet->status = WAITING;
 
     /*
    * Start transmission if the data link is free. Otherwise put the packet into
    * the buffer.
-   */
-
-    if (server_state(data->link1) == BUSY) {
-        if (server_state(data->link2) == BUSY) {
-            fifoqueue_put(data->buffer, (void *) new_packet);
-        } else {
-            start_transmission_on_link(simulation_run, new_packet, data->link2);
-        }
-    } else {
-        start_transmission_on_link(simulation_run, new_packet, data->link1);
-    }
-
-    /*
    * Schedule the next packet arrival. Independent, exponentially distributed
    * interarrival times gives us Poisson process arrivals.
    */
+    if (link_id == 1) {
+        data->arrival_count_link1++;
 
-    schedule_packet_arrival_event(simulation_run,
-                                  simulation_run_get_time(simulation_run) + exponential_generator((double) 1 / PACKET_ARRIVAL_RATE));
+        if (server_state(data->link1) == BUSY) {
+            fifoqueue_put(data->buffer1, (void *) new_packet);
+        } else {
+            start_transmission_on_link(simulation_run, new_packet, data->link1);
+        }
+
+        schedule_packet_arrival_event(
+                simulation_run, simulation_run_get_time(simulation_run) + exponential_generator((double) 1 / LINK1_PACKET_ARRIVAL_RATE), 1);
+    } else if (link_id == 2) {
+        data->arrival_count_link2++;
+
+        if (server_state(data->link2) == BUSY) {
+            fifoqueue_put(data->buffer2, (void *) new_packet);
+        } else {
+            start_transmission_on_link(simulation_run, new_packet, data->link2);
+        }
+    } else if (link_id == 3) {
+        data->arrival_count_link3++;
+
+        if (server_state(data->link3) == BUSY) {
+            fifoqueue_put(data->buffer3, (void *) new_packet);
+        } else {
+            start_transmission_on_link(simulation_run, new_packet, data->link3);
+        }
+    }
 }

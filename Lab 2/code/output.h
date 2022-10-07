@@ -39,7 +39,7 @@
 
 void output_progress_msg_to_screen(Simulation_Run_Ptr);
 
-void output_results(Simulation_Run_Ptr, const double arr[]);
+void output_results(Simulation_Run_Ptr simulation_run);
 
 void check_delay(Simulation_Run_Ptr, double arr[]);
 

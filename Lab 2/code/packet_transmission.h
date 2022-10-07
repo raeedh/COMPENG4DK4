@@ -38,10 +38,10 @@
 
 void start_transmission_on_link(Simulation_Run_Ptr, Packet_Ptr, Server_Ptr);
 
-void end_packet_transmission_event(Simulation_Run_Ptr, void *);
+void end_packet_transmission_event(Simulation_Run_Ptr, void *, int link_id);
 
-double get_packet_transmission_time(void);
+double get_packet_transmission_time(int);
 
 /******************************************************************************/
 
-#endif /* packet_transmission.h */
+#endif /* _PACKET_TRANSMISSION_H_ */

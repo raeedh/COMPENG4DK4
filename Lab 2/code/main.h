@@ -34,13 +34,22 @@
 /******************************************************************************/
 
 typedef struct _simulation_run_data_ {
-    Fifoqueue_Ptr buffer;
+    Fifoqueue_Ptr buffer1;
+    Fifoqueue_Ptr buffer2;
+    Fifoqueue_Ptr buffer3;
     Server_Ptr link1;
     Server_Ptr link2;
+    Server_Ptr link3;
     long int blip_counter;
-    long int arrival_count;
-    long int number_of_packets_processed;
-    double accumulated_delay;
+    long int arrival_count_link1;
+    long int arrival_count_link2;
+    long int arrival_count_link3;
+    long int number_of_link1_packets_processed;
+    long int number_of_link2_packets_processed;
+    long int number_of_link3_packets_processed;
+    double accumulated_delay_link1;
+    double accumulated_delay_link2;
+    double accumulated_delay_link3;
     unsigned random_seed;
 } Simulation_Run_Data, *Simulation_Run_Data_Ptr;
 

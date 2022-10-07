@@ -66,7 +66,6 @@ int main(void) {
 
         simulation_run = simulation_run_new(); /* Create a new simulation run. */
 
-        double arr[3] = {0.0, 0.0, 0.0};
         /*
      * Set the simulation_run data pointer to our data object.
      */
@@ -78,18 +77,27 @@ int main(void) {
      */
 
         data.blip_counter = 0;
-        data.arrival_count = 0;
-        data.number_of_packets_processed = 0;
-        data.accumulated_delay = 0.0;
+        data.arrival_count_link1 = 0;
+        data.arrival_count_link2 = 0;
+        data.arrival_count_link3 = 0;
+        data.number_of_link1_packets_processed = 0;
+        data.number_of_link2_packets_processed = 0;
+        data.number_of_link3_packets_processed = 0;
+        data.accumulated_delay_link1 = 0.0;
+        data.accumulated_delay_link2 = 0.0;
+        data.accumulated_delay_link3 = 0.0;
         data.random_seed = random_seed;
 
         /*
      * Create the packet buffer and transmission link, declared in main.h.
      */
 
-        data.buffer = fifoqueue_new();
-        data.link1 = server_new();
-        data.link2 = server_new();
+        data.buffer1 = fifoqueue_new(1);
+        data.buffer2 = fifoqueue_new(2);
+        data.buffer3 = fifoqueue_new(3);
+        data.link1 = server_new(1);
+        data.link2 = server_new(2);
+        data.link3 = server_new(3);
 
         /*
      * Set the random number generator seed for this run.
@@ -101,22 +109,20 @@ int main(void) {
      * Schedule the initial packet arrival for the current clock time (= 0).
      */
 
-        schedule_packet_arrival_event(simulation_run, simulation_run_get_time(simulation_run));
+        schedule_packet_arrival_event(simulation_run, simulation_run_get_time(simulation_run), 1);
 
         /*
      * Execute events until we are finished. 
      */
-
-        while (data.number_of_packets_processed < RUNLENGTH) {
+        while (data.number_of_link2_packets_processed + data.number_of_link3_packets_processed < RUNLENGTH) {
             simulation_run_execute_event(simulation_run);
-            //            check_delay(simulation_run, arr);
         }
 
         /*
      * Output results and clean up after ourselves.
      */
 
-        output_results(simulation_run, arr);
+        output_results(simulation_run);
         cleanup_memory(simulation_run);
     }
 

@@ -36,9 +36,9 @@
  * Function prototypes
  */
 
-void packet_arrival_event(Simulation_Run_Ptr, void *);
+void packet_arrival_event(Simulation_Run_Ptr, void *, int link_id);
 
-long schedule_packet_arrival_event(Simulation_Run_Ptr, double);
+long schedule_packet_arrival_event(Simulation_Run_Ptr, double, int link_id);
 
 /******************************************************************************/
 

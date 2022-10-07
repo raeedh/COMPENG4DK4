@@ -26,6 +26,7 @@
 #include "packet_transmission.h"
 #include "main.h"
 #include "output.h"
+#include "packet_arrival.h"
 #include "trace.h"
 #include <stdio.h>
 
@@ -44,6 +45,7 @@ long schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run, d
     event.description = "Packet Xmt End";
     event.function = end_packet_transmission_event;
     event.attachment = (void *) link;
+    event.attachment2 = link->id;
 
     return simulation_run_schedule_event(simulation_run, event, event_time);
 }
@@ -56,8 +58,7 @@ long schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run, d
  * if there are other packets waiting in the fifo queue. If that is the case it
  * starts the transmission of the next packet.
  */
-
-void end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void *link) {
+void end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void *link, int link_id) {
     Simulation_Run_Data_Ptr data;
     Packet_Ptr this_packet, next_packet;
 
@@ -68,27 +69,50 @@ void end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void *link
     /*
    * Packet transmission is finished. Take the packet off the data link.
    */
-
     this_packet = (Packet_Ptr) server_get(link);
 
     /* Collect statistics. */
-    data->number_of_packets_processed++;
-    data->accumulated_delay += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    if (link_id == 1) {
+        data->number_of_link1_packets_processed++;
+        data->accumulated_delay_link1 += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+        int result = uniform_generator() < P12;
+        schedule_packet_arrival_event(
+                simulation_run, simulation_run_get_time(simulation_run) + exponential_generator((double) 1 / LINK2_3_PACKET_ARRIVAL_RATE),
+                result ? 2 : 3);
+    } else if (link_id == 2) {
+        data->number_of_link2_packets_processed++;
+        data->accumulated_delay_link2 += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+        data->accumulated_delay_link1 += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    } else if (link_id == 3) {
+        data->number_of_link3_packets_processed++;
+        data->accumulated_delay_link3 += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+        data->accumulated_delay_link1 += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    }
 
     /* Output activity blip every so often. */
     //    output_progress_msg_to_screen(simulation_run);
 
-    /* This packet is done ... give the memory back. */
     xfree((void *) this_packet);
 
     /*
    * See if there is are packets waiting in the buffer. If so, take the next one
    * out and transmit it immediately.
   */
-
-    if (fifoqueue_size(data->buffer) > 0) {
-        next_packet = (Packet_Ptr) fifoqueue_get(data->buffer);
-        start_transmission_on_link(simulation_run, next_packet, link);
+    if (link_id == 1) {
+        if (fifoqueue_size(data->buffer1) > 0) {
+            next_packet = (Packet_Ptr) fifoqueue_get(data->buffer1);
+            start_transmission_on_link(simulation_run, next_packet, link);
+        }
+    } else if (link_id == 2) {
+        if (fifoqueue_size(data->buffer2) > 0) {
+            next_packet = (Packet_Ptr) fifoqueue_get(data->buffer2);
+            start_transmission_on_link(simulation_run, next_packet, link);
+        }
+    } else if (link_id == 3) {
+        if (fifoqueue_size(data->buffer3) > 0) {
+            next_packet = (Packet_Ptr) fifoqueue_get(data->buffer3);
+            start_transmission_on_link(simulation_run, next_packet, link);
+        }
     }
 }
 
@@ -114,6 +138,6 @@ void start_transmission_on_link(Simulation_Run_Ptr simulation_run, Packet_Ptr th
  * simparameters.h
  */
 
-double get_packet_transmission_time(void) {
-    return ((double) PACKET_XMT_TIME);
+double get_packet_transmission_time(int link_id) {
+    return (link_id == 1 ? LINK1_PACKET_XMT_TIME : LINK2_3_PACKET_XMT_TIME);
 }

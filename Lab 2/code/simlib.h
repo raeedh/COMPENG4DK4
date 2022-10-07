@@ -66,8 +66,9 @@ typedef struct _clock_ {
 
 typedef struct _event_ {
     const char *description;
-    void (*function)(struct _simulation_run_ *, void *);
+    void (*function)(struct _simulation_run_ *, void *, int);
     void *attachment;
+    int attachment2;
 } Event, *Event_Ptr;
 
 typedef struct _event_container_ {
@@ -100,6 +101,7 @@ typedef struct _fifoqueue_ {
     struct _queue_container_ *front_ptr;
     struct _queue_container_ *back_ptr;
     int size;
+    int id;
 } Fifoqueue, *Fifoqueue_Ptr;
 
 typedef struct _queue_container_ {
@@ -118,6 +120,7 @@ typedef enum { FREE, BUSY } Server_State;
 typedef struct _server_ {
     Server_State state;
     void *customer_in_service;
+    int id;
 } Server, *Server_Ptr;
 
 /******************************************************************************/
@@ -168,7 +171,7 @@ long int simulation_run_schedule_event(Simulation_Run_Ptr, Event, double);
 
 void *simulation_run_deschedule_event(Simulation_Run_Ptr, long int);
 
-Fifoqueue_Ptr fifoqueue_new(void);
+Fifoqueue_Ptr fifoqueue_new(int);
 
 void fifoqueue_put(Fifoqueue_Ptr, void *);
 
@@ -178,7 +181,7 @@ int fifoqueue_size(Fifoqueue_Ptr);
 
 void *fifoqueue_see_front(Fifoqueue_Ptr);
 
-Server_Ptr server_new(void);
+Server_Ptr server_new(int);
 
 void server_put(Server_Ptr, void *);
 

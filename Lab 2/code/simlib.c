@@ -298,7 +298,7 @@ void simulation_run_execute_event(Simulation_Run_Ptr simulation_run) {
     TRACE(event_print_type(current_container->event);)
     TRACE(printf("occurring at %.3f\n", simulation_run_get_time(simulation_run));)
 
-    (*(current_container->event.function))(simulation_run, current_container->event.attachment);
+    (*(current_container->event.function))(simulation_run, current_container->event.attachment, current_container->event.attachment2);
     xfree(current_container);
 }
 
@@ -367,11 +367,12 @@ static void event_print_type(Event event) {
  * Fifoqueue. The FIFO queue is a singly linked list.
  */
 
-Fifoqueue_Ptr fifoqueue_new(void) {
+Fifoqueue_Ptr fifoqueue_new(int id) {
     Fifoqueue_Ptr queue_id;
 
     queue_id = (Fifoqueue_Ptr) xmalloc(sizeof(Fifoqueue));
     queue_id->size = 0;
+    queue_id->id = id;
     queue_id->front_ptr = NULL;
     queue_id->back_ptr = NULL;
     return queue_id;
@@ -445,12 +446,13 @@ void *fifoqueue_see_front(Fifoqueue_Ptr queue_ptr) {
  * Create and return a pointer to an empty server. The server is marked FREE.
  */
 
-Server_Ptr server_new(void) {
+Server_Ptr server_new(int id) {
     Server_Ptr server_ptr;
 
     server_ptr = (Server_Ptr) xmalloc(sizeof(Server));
     server_ptr->customer_in_service = NULL;
     server_ptr->state = FREE;
+    server_ptr->id = id;
     return server_ptr;
 }
 
