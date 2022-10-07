@@ -1,5 +1,12 @@
 \section*{Experiment 5}
 % There are three packet switches connected into a network as shown below. Each of the switches has local packet arrivals at rates of λ1, λ2 and λ3 packets/second, as shown. The packet arrival process can be modelled as Poisson and all packets are 1000 bits. At each switch, the arriving packets are buffered in FCFS order, awaiting transmission on the outgoing link. All of the packets that arrive at Switch 1 are transmitted over Link 1, which is a wireless link that Switches 2 and 3 are listening on. Each packet that is transmitted on Link 1 is destined for Link 2 with probability p12 = 1 − p13, independently for each transmitted packet. Eventually, all arriving packets are transmitted over either Link 2 or 3. The transmission bit rates are 2 Mbps, 1 Mbps and 1 Mbps for Links 1, 2 and 3, respectively. Create a simulation that models the performance of this network. Fix λ2 and λ3 to the same value of 500 packets/second, and set λ1 to 750 packets/second. Generate plots of mean delay vs. p12, showing the mean delay experienced by packets originating at Switches 1, 2 and 3, on the same graph. The total delay of a packet is from the time it arrives to one of the switches, until it is fully transmitted on either Link 2 or 3.
+To create a simulation that modelled the diagram shown below, 2 more servers and queues were initialized, as well as 2 more counters for arrivals, number of packets processed and accumulated delay.
+The packet arrival functions were modified to include a link id parameter, which is used to determine which link the packet has arrived at.
+Only if it is link 1, we also schedule another packet arrival event, otherwise we just start transmission on the link or put the packet in the queue as usual, shown in Listing~\ref{list:exp5}.
+The packet transmission functions were also modified to include a link id, either through the Server struct or a parameter.
+If the packet was transmitted on link 1, we determine whether we send it to switch 2 or switch 3 based on the given probability, and then schedule a packet arrival event for that switch.
+Otherwise, if the packet was transmitted on link 2 or 3, we add the transmission time to the accumulated delay for switch 1 as well, as specified in the instructions.
+We also start another transmission on the respective link that the old packet was transmitted on, if there's any packets left in the queue.
 
 A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
 
