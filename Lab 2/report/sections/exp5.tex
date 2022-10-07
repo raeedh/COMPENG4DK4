@@ -8,7 +8,7 @@ A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
     \begin{tikzpicture}
         \begin{axis}
             [
-            title = {Mean Delay vs. \texttt{$p_{12}$}},
+            title = {Mean Delay to Full Transmission vs. \texttt{$p_{12}$}},
             width = \textwidth,
             %height = 150,
             xmin = 0, xmax = 1.0,
@@ -19,6 +19,7 @@ A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
                 /pgf/number format/precision=3
             },
             scaled x ticks=false,
+            legend pos=south west,
             % some code for adding points
             %nodes near coords={%
             %\footnotesize
@@ -28,9 +29,19 @@ A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
             %{\pgfkeysvalueof{/data point/y}})$%
             %},
             ]
-            \addplot table [y=$mean_delay$, x=$P_{12}$]{./data/exp5.dat};
+            \addlegendimage{empty legend}
+            \addlegendentry{\hspace{-.6cm}\textbf{Packet Origin}}
+            \addplot table [y=$sw1_mean_delay$, x=$P_12$]{./data/exp5.dat};
+            \label{plot:exp5sw1}
+            \addlegendentry{Switch 1}
+            \addplot table [y=$sw2_mean_delay$, x=$P_12$]{./data/exp5.dat};
+            \label{plot:exp5sw2}
+            \addlegendentry{Switch 2}
+            \addplot table [y=$sw3_mean_delay$, x=$P_12$]{./data/exp5.dat};
+            \label{plot:exp5sw3}
+            \addlegendentry{Switch 3}
         \end{axis}
     \end{tikzpicture}
-    \caption{Experiment 5: Mean Delay vs. $p_{12}$}
+    \caption{Experiment 5: Mean Delay to Full Transmission vs. $p_{12}$}
     \label{fig:exp5}
 \end{figure}

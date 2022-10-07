@@ -1,1 +1,43 @@
 \section*{Experiment 7}
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{MEAN\_ARRIVAL\_RATE}},
+		width = \textwidth,
+		% height = 350,
+		xmin = 0, xmax = 25,
+		ymin = 0, ymax = 1300,
+		ylabel = Mean Delay (msec), xlabel = \texttt{MEAN\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$data_mean_delay$, x=$arr_rate$]{./data/exp7.dat};
+	\label{plot:exp7data}
+	\addlegendentry{Data Packet}
+	\addplot table [y=$voice_mean_delay$, x=$arr_rate$]{./data/exp7.dat};
+	\label{plot:exp7voice}
+	\addlegendentry{Voice Stream}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 7: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp7}
+\end{figure}
