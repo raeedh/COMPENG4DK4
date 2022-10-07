@@ -86,7 +86,7 @@ void packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
    */
 
     if (server_state(data->link) == BUSY) {
-        fifoqueue_put(data->buffer, (void *) new_packet);
+        fifoqueue_put(data->buffer_data, (void *) new_packet);
     } else {
         start_transmission_on_link(simulation_run, new_packet, data->link);
     }
@@ -119,7 +119,7 @@ void voice_packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
    */
 
     if (server_state(data->link) == BUSY) {
-        fifoqueue_put(data->buffer, (void *) new_packet);
+        fifoqueue_put(data->buffer_voice, (void *) new_packet);
     } else {
         start_transmission_on_link(simulation_run, new_packet, data->link);
     }
