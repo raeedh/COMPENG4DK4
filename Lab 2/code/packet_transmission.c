@@ -74,9 +74,16 @@ void end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void *link
     /* Collect statistics. */
     data->number_of_packets_processed++;
     data->accumulated_delay += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    if (this_packet->packet_type) {
+        data->number_of_voice_packets_processed++;
+        data->accumulated_voice_delay += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    } else {
+        data->number_of_data_packets_processed++;
+        data->accumulated_data_delay += simulation_run_get_time(simulation_run) - this_packet->arrive_time;
+    }
 
     /* Output activity blip every so often. */
-    output_progress_msg_to_screen(simulation_run);
+    // output_progress_msg_to_screen(simulation_run);
 
     /* This packet is done ... give the memory back. */
     xfree((void *) this_packet);
@@ -115,5 +122,9 @@ void start_transmission_on_link(Simulation_Run_Ptr simulation_run, Packet_Ptr th
  */
 
 double get_packet_transmission_time(void) {
-    return ((double) PACKET_XMT_TIME);
+    return (exponential_generator((double) MEAN_SERVICE_TIME));
+}
+
+double get_voice_packet_transmission_time(void) {
+    return ((double) VOICE_PACKET_XMT_TIME);
 }
