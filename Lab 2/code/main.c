@@ -79,7 +79,11 @@ int main(void) {
         data.blip_counter = 0;
         data.arrival_count = 0;
         data.number_of_packets_processed = 0;
+        data.number_of_data_packets_processed = 0;
+        data.number_of_voice_packets_processed = 0;
         data.accumulated_delay = 0.0;
+        data.accumulated_data_delay = 0.0;
+        data.accumulated_voice_delay = 0.0;
         data.random_seed = random_seed;
 
         /*
@@ -100,6 +104,7 @@ int main(void) {
      */
 
         schedule_packet_arrival_event(simulation_run, simulation_run_get_time(simulation_run));
+        schedule_voice_arrival_event(simulation_run, simulation_run_get_time(simulation_run));
 
         /*
      * Execute events until we are finished. 

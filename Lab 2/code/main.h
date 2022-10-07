@@ -39,7 +39,11 @@ typedef struct _simulation_run_data_ {
     long int blip_counter;
     long int arrival_count;
     long int number_of_packets_processed;
+    long int number_of_data_packets_processed;
+    long int number_of_voice_packets_processed;
     double accumulated_delay;
+    double accumulated_data_delay;
+    double accumulated_voice_delay;
     unsigned random_seed;
 } Simulation_Run_Data, *Simulation_Run_Data_Ptr;
 
@@ -50,6 +54,7 @@ typedef struct _packet_ {
     double service_time;
     int source_id;
     int destination_id;
+    int packet_type;
     Packet_Status status;
 } Packet, *Packet_Ptr;
 
