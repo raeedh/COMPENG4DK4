@@ -1,5 +1,84 @@
 \section*{Experiment 6}
 % There is a packet switching link that is servicing both real-time voice and best-effort data traffic. The data traffic arrives according to a Poisson process as in Part 2, but where service times are exponentially distributed with a mean service time of 40 ms. There is also a voice traffic stream encoded using the G.711 (64 Kbps) voice codec. In this case, packets arrive periodically with fixed inter-packet arrival times equal to tv = 20 ms. The packets include 62 bytes of header overhead in addition to the voice payload. Assume that the transmission link operates at 1 Mbps.
-% Write a simulation for this situation assuming that all arriving packets are placed in the same buffer and served in FCFS order. The best way to do this is to generate two new arrival events for the two streams (voice and data). Generate results which show the mean delay of the voice and data packets versus the data packet arrival rate (i.e., MEAN ARRIVAL RATE). Plot a separate curve for each voice stream delay and data packet delay on the same graph.
-
 The packet length of each G.711 encoded voice packet was determined to be 1792 bits per packet, or 224 bytes per packet. As the voice packets arrive every 20 ms, each voice packet must contain 20 ms of the voice payload. Therefore, each packet contains a 62 byte header and 160 bytes of the voice payload (20 ms at 64 Kbps = 1280 bits or 160 bytes).
+
+% Write a simulation for this situation assuming that all arriving packets are placed in the same buffer and served in FCFS order. The best way to do this is to generate two new arrival events for the two streams (voice and data). Generate results which show the mean delay of the voice and data packets versus the data packet arrival rate (i.e., MEAN ARRIVAL RATE). Plot a separate curve for each voice stream delay and data packet delay on the same graph.
+The simulation was modified to add this additional voice packet. A new arrival event for the voice stream was created, with the code shown in Listing~\ref{list:exp6}. Additional changes were made to the program to log this additional data (separating the delay and number of packets processed for data packets and voice packets).
+
+A graph comparing the voice stream delay and data packet delay is shown in Figure~\ref{fig:exp6}. Both plots show an exponential curve similar to what is seen in Experiment 2. For the data packet delay, the exponential curve is expected as voice stream packets will transmitted quickly (relative to the transmission of the data packet, for which the mean transmission time is over 20 times larger than the voice stream packet transmission time) if they are in queue, meaning the data packet mean delay is relatively unaffected by this and will mostly exhibit the exponential behaviour expected for the Poisson distributed arrivals. For the data stream packets, the exponential curve is expected as these packets arrive slower than the mean service time of the data packets leading to these packets being stuck in queue longer as the packet arrival rate decreases. Therefore the mean delay curve for the voice stream packets follows the same curve as the data packet delay curve, but is about 40 msec below the packet delay curve.
+
+\begin{lstlisting}[language=C, caption={Modifications to Experiment 6 Code}, label={list:exp6}][htp]
+void voice_packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
+	Simulation_Run_Data_Ptr data;
+	Packet_Ptr new_packet;
+
+	data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+	data->arrival_count++;
+
+	new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
+	new_packet->arrive_time = simulation_run_get_time(simulation_run);
+	new_packet->service_time = get_voice_packet_transmission_time();
+	new_packet->status = WAITING;
+	new_packet->packet_type = 1;
+
+	/*
+	* Start transmission if the data link is free. Otherwise put the packet into
+	* the buffer.
+	*/
+
+	if (server_state(data->link) == BUSY) {
+		fifoqueue_put(data->buffer, (void *) new_packet);
+	} else {
+		start_transmission_on_link(simulation_run, new_packet, data->link);
+	}
+
+	/*
+	* Schedule the next packet arrival. Independent, exponentially distributed
+	* interarrival times gives us Poisson process arrivals.
+	*/
+
+	schedule_voice_arrival_event(simulation_run, simulation_run_get_time(simulation_run) + 0.2);
+}
+\end{lstlisting}
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{MEAN\_ARRIVAL\_RATE}},
+		width = \textwidth,
+		% height = 350,
+		xmin = 0, xmax = 25,
+		ymin = 0, ymax = 1300,
+		ylabel = Mean Delay (msec), xlabel = \texttt{MEAN\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$data_mean_delay$, x=$arr_rate$]{./data/exp6.dat};
+	\label{plot:exp6data}
+	\addlegendentry{Data Packet}
+	\addplot table [y=$voice_mean_delay$, x=$arr_rate$]{./data/exp6.dat};
+	\label{plot:exp6voice}
+	\addlegendentry{Voice Stream}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 6: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp6}
+\end{figure}

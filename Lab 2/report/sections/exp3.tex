@@ -6,25 +6,25 @@ The code was modified to add a check to see if the delay for any packet is great
 % 402: 1.99% of packets > 20 msec delay
 
 \begin{lstlisting}[language=C, caption={Modifications to Experiment 3 Code}, label={list:exp3}][htp]
-    void check_delay(Simulation_Run_Ptr simulation_run, double arr[]) {
-        Simulation_Run_Data_Ptr data;
-    
-        data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
-    
-        // Get current packet and time
-        double a = 1e3 * data->accumulated_delay;
-        int b = data->number_of_packets_processed;
-    
-        // Check if num packets has changed
-        if (arr[1] + 1 == b) {
-            // Check if change in time is greater than 20 (packet delay > 20 msec)
-            if (a > arr[2] + 20) {
-                arr[0]++;
-            }
-    
-            // Update with new packet and time
-            arr[1] = b;
-            arr[2] = a;
+void check_delay(Simulation_Run_Ptr simulation_run, double arr[]) {
+    Simulation_Run_Data_Ptr data;
+
+    data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+    // Get current packet and time
+    double a = 1e3 * data->accumulated_delay;
+    int b = data->number_of_packets_processed;
+
+    // Check if num packets has changed
+    if (arr[1] + 1 == b) {
+        // Check if change in time is greater than 20 (packet delay > 20 msec)
+        if (a > arr[2] + 20) {
+            arr[0]++;
         }
+
+        // Update with new packet and time
+        arr[1] = b;
+        arr[2] = a;
     }
+}
 \end{lstlisting}

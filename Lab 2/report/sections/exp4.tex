@@ -4,45 +4,45 @@
 To achieve this M/D/2 queueing system, the \texttt{packet\_arrival\_event} in \texttt{packet\_arrival.c} was modified with the changes in Listing~\ref{list:exp4} which adds an additional link. A plot of the mean delay vs. packet arrival rate is shown in Figure~\ref{fig:exp4}. At low packet arrival rate values, we see the mean delay approaches 1.0 msec. The mean delay axis intercept at these low packet arrival rates equal to the packet length divided by the link bit rate, in this experiment this is 500 bits divided by 500 bits per msec, or 1.0 msec. If we compare it to experiment 2, we can see that adding the 2nd link decreases the rate of mean delay growth as the packet arrival rate values increase. Although, similar to Lab 1, we can observe that the mean delay growth is still exponential as we begin to increase the packet arrival rate.
 
 \begin{lstlisting}[language=C, caption={Modifications to Experiment 4 Code}, label={list:exp4}][htp]
-    if (server_state(data->link1) == BUSY) {
-        if (server_state(data->link2) == BUSY) {
-            fifoqueue_put(data->buffer, (void *) new_packet);
-        } else {
-            start_transmission_on_link(simulation_run, new_packet, data->link2);
-        }
+if (server_state(data->link1) == BUSY) {
+    if (server_state(data->link2) == BUSY) {
+        fifoqueue_put(data->buffer, (void *) new_packet);
     } else {
-        start_transmission_on_link(simulation_run, new_packet, data->link1);
+        start_transmission_on_link(simulation_run, new_packet, data->link2);
     }
+} else {
+    start_transmission_on_link(simulation_run, new_packet, data->link1);
+}
 \end{lstlisting}
 
 \begin{figure}[htp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}
-            [
-            title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
-            width = \textwidth,
-            %height = 150,
-            xmin = 0, xmax = 2000,
-            ymin = 0, ymax = 11.0,
-            ylabel = Mean Delay (msec), xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
-            xticklabel style={
-                /pgf/number format/fixed,
-                /pgf/number format/precision=3
-            },
-            scaled x ticks=false,
-            % some code for adding points
-            %nodes near coords={%
-            %\footnotesize
-            %$(\pgfmathprintnumber
-            %{\pgfkeysvalueof{/data point/x}},
-            %\pgfmathprintnumber
-            %{\pgfkeysvalueof{/data point/y}})$%
-            %},
-            ]
-            \addplot table [y=$mean_delay$, x=$arr_rate$]{./data/exp4.dat};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Experiment 4: Mean Delay vs. Packet Arrival Rate}
-    \label{fig:exp4}
+\centering
+\begin{tikzpicture}
+    \begin{axis}
+        [
+        title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+        width = \textwidth,
+        %height = 150,
+        xmin = 0, xmax = 2000,
+        ymin = 0, ymax = 11.0,
+        ylabel = Mean Delay (msec), xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+        xticklabel style={
+            /pgf/number format/fixed,
+            /pgf/number format/precision=3
+        },
+        scaled x ticks=false,
+        % some code for adding points
+        %nodes near coords={%
+        %\footnotesize
+        %$(\pgfmathprintnumber
+        %{\pgfkeysvalueof{/data point/x}},
+        %\pgfmathprintnumber
+        %{\pgfkeysvalueof{/data point/y}})$%
+        %},
+        ]
+        \addplot table [y=$mean_delay$, x=$arr_rate$]{./data/exp4.dat};
+    \end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp4}
 \end{figure}
