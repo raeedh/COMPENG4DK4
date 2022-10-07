@@ -4,93 +4,75 @@
 A plot of the mean delay vs. $p_{12}$ is shown in Figure~\ref{fig:exp5}.
 
 \begin{lstlisting}[language=C, caption={Modifications to Experiment 5 Code}, label={list:exp5}][htp]
-void packet_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr, int link_id) {
-    Simulation_Run_Data_Ptr data;
-    Packet_Ptr new_packet;
+if (link_id == 1) {
+    data->arrival_count_link1++;
 
-    data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+    if (server_state(data->link1) == BUSY) {
+        fifoqueue_put(data->buffer1, (void *) new_packet);
+    } else {
+        start_transmission_on_link(simulation_run, new_packet, data->link1);
+    }
 
-    new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
-    new_packet->arrive_time = simulation_run_get_time(simulation_run);
-    new_packet->service_time = get_packet_transmission_time(link_id);
-    new_packet->status = WAITING;
+    schedule_packet_arrival_event(
+            simulation_run, simulation_run_get_time(simulation_run) + exponential_generator((double) 1 / LINK1_PACKET_ARRIVAL_RATE), 1);
+} else if (link_id == 2) {
+    data->arrival_count_link2++;
 
-    /*
-   * Start transmission if the data link is free. Otherwise put the packet into
-   * the buffer.
-   * Schedule the next packet arrival. Independent, exponentially distributed
-   * interarrival times gives us Poisson process arrivals.
-   */
-    if (link_id == 1) {
-        data->arrival_count_link1++;
+    if (server_state(data->link2) == BUSY) {
+        fifoqueue_put(data->buffer2, (void *) new_packet);
+    } else {
+        start_transmission_on_link(simulation_run, new_packet, data->link2);
+    }
+} else if (link_id == 3) {
+    data->arrival_count_link3++;
 
-        if (server_state(data->link1) == BUSY) {
-            fifoqueue_put(data->buffer1, (void *) new_packet);
-        } else {
-            start_transmission_on_link(simulation_run, new_packet, data->link1);
-        }
-
-        schedule_packet_arrival_event(
-                simulation_run, simulation_run_get_time(simulation_run) + exponential_generator((double) 1 / LINK1_PACKET_ARRIVAL_RATE), 1);
-    } else if (link_id == 2) {
-        data->arrival_count_link2++;
-
-        if (server_state(data->link2) == BUSY) {
-            fifoqueue_put(data->buffer2, (void *) new_packet);
-        } else {
-            start_transmission_on_link(simulation_run, new_packet, data->link2);
-        }
-    } else if (link_id == 3) {
-        data->arrival_count_link3++;
-
-        if (server_state(data->link3) == BUSY) {
-            fifoqueue_put(data->buffer3, (void *) new_packet);
-        } else {
-            start_transmission_on_link(simulation_run, new_packet, data->link3);
-        }
+    if (server_state(data->link3) == BUSY) {
+        fifoqueue_put(data->buffer3, (void *) new_packet);
+    } else {
+        start_transmission_on_link(simulation_run, new_packet, data->link3);
     }
 }
 \end{lstlisting}
 
 \begin{figure}[htp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}
-            [
-            title = {Mean Delay to Full Transmission vs. \texttt{$p_{12}$}},
-            width = \textwidth,
-            %height = 150,
-            xmin = 0, xmax = 1.0,
-            ymin = 0, ymax = 3.2,
-            ylabel = Mean Delay (msec), xlabel = \texttt{$p_{12}$},
-            xticklabel style={
-                /pgf/number format/fixed,
-                /pgf/number format/precision=3
-            },
-            scaled x ticks=false,
-            legend pos=south west,
-            % some code for adding points
-            %nodes near coords={%
-            %\footnotesize
-            %$(\pgfmathprintnumber
-            %{\pgfkeysvalueof{/data point/x}},
-            %\pgfmathprintnumber
-            %{\pgfkeysvalueof{/data point/y}})$%
-            %},
-            ]
-            \addlegendimage{empty legend}
-            \addlegendentry{\hspace{-.6cm}\textbf{Packet Origin}}
-            \addplot table [y=$sw1_mean_delay$, x=$P_12$]{./data/exp5.dat};
-            \label{plot:exp5sw1}
-            \addlegendentry{Switch 1}
-            \addplot table [y=$sw2_mean_delay$, x=$P_12$]{./data/exp5.dat};
-            \label{plot:exp5sw2}
-            \addlegendentry{Switch 2}
-            \addplot table [y=$sw3_mean_delay$, x=$P_12$]{./data/exp5.dat};
-            \label{plot:exp5sw3}
-            \addlegendentry{Switch 3}
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Experiment 5: Mean Delay to Full Transmission vs. $p_{12}$}
-    \label{fig:exp5}
+\centering
+\begin{tikzpicture}
+    \begin{axis}
+        [
+        title = {Mean Delay to Full Transmission vs. \texttt{$p_{12}$}},
+        width = \textwidth,
+        %height = 150,
+        xmin = 0, xmax = 1.0,
+        ymin = 0, ymax = 3.2,
+        ylabel = Mean Delay (msec), xlabel = \texttt{$p_{12}$},
+        xticklabel style={
+            /pgf/number format/fixed,
+            /pgf/number format/precision=3
+        },
+        scaled x ticks=false,
+        legend pos=south west,
+        % some code for adding points
+        %nodes near coords={%
+        %\footnotesize
+        %$(\pgfmathprintnumber
+        %{\pgfkeysvalueof{/data point/x}},
+        %\pgfmathprintnumber
+        %{\pgfkeysvalueof{/data point/y}})$%
+        %},
+        ]
+        \addlegendimage{empty legend}
+        \addlegendentry{\hspace{-.6cm}\textbf{Packet Origin}}
+        \addplot table [y=$sw1_mean_delay$, x=$P_12$]{./data/exp5.dat};
+        \label{plot:exp5sw1}
+        \addlegendentry{Switch 1}
+        \addplot table [y=$sw2_mean_delay$, x=$P_12$]{./data/exp5.dat};
+        \label{plot:exp5sw2}
+        \addlegendentry{Switch 2}
+        \addplot table [y=$sw3_mean_delay$, x=$P_12$]{./data/exp5.dat};
+        \label{plot:exp5sw3}
+        \addlegendentry{Switch 3}
+    \end{axis}
+\end{tikzpicture}
+\caption{Experiment 5: Mean Delay to Full Transmission vs. $p_{12}$}
+\label{fig:exp5}
 \end{figure}
