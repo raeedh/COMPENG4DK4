@@ -70,6 +70,7 @@ void output_results(Simulation_Run_Ptr this_simulation_run)
   printf("\n");
 
   printf("random seed = %d \n", sim_data->random_seed);
+  printf("offered load = %d Erlangs \n", Call_ARRIVALRATE * MEAN_CALL_DURATION);
   printf("call arrival count = %ld \n", sim_data->call_arrival_count);
   printf("blocked call count = %ld \n", sim_data->blocked_call_count);
 
