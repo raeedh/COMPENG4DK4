@@ -1,0 +1,9 @@
+#!/bin/bash
+for j in {1..20}
+do
+	for i in {1..20}
+	do
+		# echo $i
+		make clean; make call_arr=$j chan_num=$i all; ./run >> exp2/load$j
+	done
+done
