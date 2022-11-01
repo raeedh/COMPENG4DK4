@@ -30,7 +30,7 @@ end
 pbaspect([1 1 1])
 
 lgd = legend(lgd_list, 'Interpreter', 'latex', 'NumColumns', 6, Location='southoutside');
-title(lgd, "Offered Load")
+title(lgd, "Offered Load (Erlangs)")
 lgd.FontSize = 18;
 
 f = gcf;
