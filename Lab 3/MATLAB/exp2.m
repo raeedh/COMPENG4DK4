@@ -21,7 +21,7 @@ end
 ax = gca;
 set(ax, 'YScale', 'log', 'FontSize', 18, 'XTick', N, 'XLim', [1 20], 'YLim', [0.0001 1]); xtickangle(0);
 xlabel('Number of Channels'); ylabel('Block Probability')
-title("Number of Channels vs. Blocking Probability");
+title("Blocking Probability vs. Number of Channels");
 
 for A = 1:20
     lgd_list(A) = append("$a = ", string(A),"$");
