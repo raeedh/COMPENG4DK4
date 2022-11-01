@@ -1,3 +1,34 @@
 \section*{Experiment 3}
 % Cellular networks are often designed so that under busy traffic conditions, the highest acceptable probability of blocking is about 1% (i.e., the probability of rejecting a cell-phone call is 1% because the cellular network has no available channels.) Generate a graph of maximum offered loading (in Erlangs) versus the number of cellular channels needed to achieve this blocking probability performance.
-To determine the 
+The maximum offered loading (in Erlangs) versus the number of cellular channels needed to achieve a 1\% blocking probability is graphed on Figure~\ref{fig:exp3}. The minimum number of cellular channels required to have an "acceptable" cellular network with less than 1\% blocking probability is 5 cellular channels, which remains acceptable for a maximum offered load of 1 Erlang. The increase in the maximum offered loading follows demonstrates mostly linear growth.
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Maximum Offered Loading vs. Number of Cellular Channels},
+		width = \textwidth,
+		%height = 150,
+		xmin = 1, xmax = 40,
+		ymin = 0, ymax = 30,
+		ylabel = Maximum Offered Loading (Erlangs), xlabel =Number of Cellular Channels,
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$off_load$, x=$num_chan$]{./data/exp3.dat};
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 3}
+\label{fig:exp3}
+\end{figure}
