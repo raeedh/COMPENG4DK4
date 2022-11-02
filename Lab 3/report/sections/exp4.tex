@@ -96,9 +96,9 @@ The mean time that customers have to wait on the queue versus offered loading fo
 \caption{Experiment 4: Mean Delay}
 \label{fig:exp4_delay}
 \end{figure}
-% \clearpage
+\clearpage
 
-\begin{lstlisting}[float,language=c,caption=Hang Up \& Connect, or Wait on Call Arrival, label=list:exp4_arrival]
+\begin{lstlisting}[language=c,caption=Hang Up \& Connect or Wait on Call Arrival, label=list:exp4_arrival]
 if ((free_channel = get_free_channel(simulation_run)) != NULL) {
 	int queue_size;
 	if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {
@@ -144,7 +144,7 @@ if ((free_channel = get_free_channel(simulation_run)) != NULL) {
 }
 \end{lstlisting}
 	
-\begin{lstlisting}[float,language=c,caption=Hang Up \& Connect on Call Departure, label=list:exp4_departure]
+\begin{lstlisting}[language=c,caption=Hang Up \& Connect on Call Departure, label=list:exp4_departure]
 if ((free_channel = get_free_channel(simulation_run)) != NULL) {
 	int queue_size;
 	if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {
