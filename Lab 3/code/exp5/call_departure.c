@@ -32,6 +32,8 @@
 #include "output.h"
 #include "simparameters.h"
 #include "call_departure.h"
+#include "call_arrival.h"
+#include "call_duration.h"
 
 /*******************************************************************************/
 
@@ -63,7 +65,7 @@ void
 end_call_on_channel_event(Simulation_Run_Ptr simulation_run, void * c_ptr)
 {
   Call_Ptr this_call, next_call;
-  Channel_Ptr channel;
+  Channel_Ptr channel, free_channel;
   Simulation_Run_Data_Ptr sim_data;
   double now;
 
@@ -80,6 +82,8 @@ end_call_on_channel_event(Simulation_Run_Ptr simulation_run, void * c_ptr)
   /* Collect statistics. */
   sim_data->number_of_calls_processed++;
   sim_data->accumulated_call_time += now - this_call->arrive_time;
+  sim_data->accumulated_wait_time += this_call->waiting_time;
+  if (this_call->waiting_time > Wt_time) sim_data->waited_over_count++; 
 
   // output_progress_msg_to_screen(simulation_run);
 
@@ -90,8 +94,21 @@ end_call_on_channel_event(Simulation_Run_Ptr simulation_run, void * c_ptr)
    * See if there is are calls waiting in the buffer and there is a free channel. If so, take the next one
    * out and connect it immediately.
   */
-  if ((fifoqueue_size(sim_data->buffer) > 0) && ((get_free_channel(simulation_run)) != NULL)) {
+  if ((fifoqueue_size(sim_data->buffer) > 0) && ((free_channel = get_free_channel(simulation_run)) != NULL)) {
     next_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
+
+    /* Yes, we found one. Allocate some memory and start the call. */
+    next_call->call_duration = get_call_duration();
+    next_call->waiting_time = now - next_call->arrive_time;
+
+    /* Place the call in the free channel and schedule its
+       departure. */
+    server_put(free_channel, (void*) next_call);
+    next_call->channel = free_channel;
+
+    schedule_end_call_on_channel_event(simulation_run,
+				       now + next_call->call_duration,
+				       (void *) free_channel);
   }
 }
 

@@ -25,57 +25,26 @@
 
 /*******************************************************************************/
 
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef _SIMPARAMETERS_H_
+#define _SIMPARAMETERS_H_
 
 /*******************************************************************************/
 
-#include "simlib.h"
+#define Call_ARRIVALRATE 2   /* calls/minute */
+#define MEAN_CALL_DURATION 3 /* minutes */
+#define RUNLENGTH 50e6 /* number of successful calls */
+#define BLIPRATE 1e3
+#define NUMBER_OF_CHANNELS 10
+#define Wt_time 5
+
+/* Comma separated list of random seeds to run. */
+#define RANDOM_SEED_LIST                                                                                                                   \
+    400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882, 40018820, 400190637, 1906374, 19063740, 190637400,  \
+            906374001, 63740019, 637400190, 374001906, 740019063
 
 /*******************************************************************************/
 
-typedef Server Channel;
-typedef Server_Ptr Channel_Ptr;
-
-typedef enum {XMTTING, WAITING} Call_Status;
-
-typedef struct _call_
-{
-  double arrive_time;
-  double waiting_time;
-  double call_duration;
-  Channel_Ptr channel;
-} Call, * Call_Ptr;
-
-typedef struct _simulation_run_data_
-{
-  Fifoqueue_Ptr buffer;
-  Channel_Ptr * channels;
-  long int blip_counter;
-  long int call_arrival_count;
-  long int calls_processed;
-  long int blocked_call_count;
-  long int waited_call_count;
-  long int waited_over_count;
-  long int number_of_calls_processed;
-  double accumulated_call_time;
-  double accumulated_wait_time;
-  unsigned random_seed;
-} Simulation_Run_Data, * Simulation_Run_Data_Ptr;
-
-/*******************************************************************************/
-
-/*
- * Function prototypes
- */
-
-extern int main(void);
-
-/*******************************************************************************/
-
-#endif /* main.h */
-
-
+#endif /* simparameters.h */
 
 
 
