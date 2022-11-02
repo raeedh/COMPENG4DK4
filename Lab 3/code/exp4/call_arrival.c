@@ -83,7 +83,7 @@ void call_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
                 break;
             }
 
-            // If the queue only contains customers that have hung up, we need to allocate some memory for the new call
+            // If the queue only contained customers that have hung up, we need to allocate some memory for the new call
             if (new_call == NULL) {
                 new_call = (Call_Ptr) xmalloc(sizeof(Call));
             }
