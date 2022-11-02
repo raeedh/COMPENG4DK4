@@ -74,7 +74,7 @@ void end_call_on_channel_event(Simulation_Run_Ptr simulation_run, void *c_ptr) {
     sim_data->number_of_calls_processed++;
     sim_data->accumulated_call_time += now - this_call->arrive_time;
 
-//    output_progress_msg_to_screen(simulation_run);
+    // output_progress_msg_to_screen(simulation_run);
 
     /* This call is done. Free up its allocated memory.*/
     xfree((void *) this_call);

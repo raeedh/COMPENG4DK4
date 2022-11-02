@@ -98,15 +98,53 @@ The mean time that customers have to wait on the queue versus offered loading fo
 \end{figure}
 % \clearpage
 
-\begin{lstlisting}[float,language=c,caption=Wait on Call Arrival, label=list:exp4_arrival]
+\begin{lstlisting}[float,language=c,caption=Hang Up \& Connect, or Wait on Call Arrival, label=list:exp4_arrival]
+if ((free_channel = get_free_channel(simulation_run)) != NULL) {
+	int queue_size;
+	if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {
+		for (int i = 0; i < queue_size; ++i) {
+			new_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
+
+			if (new_call->hang_up_time < now) {
+				sim_data->call_hung_up_count++;
+				sim_data->accumulated_queue_wait_time += new_call->hang_up_time - new_call->arrive_time;
+				xfree((void *) new_call);
+				new_call = NULL;
+				continue;
+			}
+
+			sim_data->accumulated_queue_wait_time += now - new_call->arrive_time;
+			break;
+		}
+
+		// If the queue only contained customers that have hung up, we need to allocate some memory for the new call
+		if (new_call == NULL) {
+			new_call = (Call_Ptr) xmalloc(sizeof(Call));
+		}
+	} else {
+		/* Yes, we found one. Allocate some memory and start the call. */
+		new_call = (Call_Ptr) xmalloc(sizeof(Call));
+	}
+
+	new_call->arrive_time = now;
+	new_call->call_duration = get_call_duration();
+
+	/* Place the call in the free channel and schedule its departure. */
+	server_put(free_channel, (void *) new_call);
+	new_call->channel = free_channel;
+
+	schedule_end_call_on_channel_event(simulation_run, now + new_call->call_duration, (void *) free_channel);
 } else {
-	/* No free channel was found. The call is placed in queue. */
+	/* No free channel was found. The call is put into queue. */
+	new_call = (Call_Ptr) xmalloc(sizeof(Call));
+	new_call->arrive_time = now;
+	new_call->hang_up_time = now + exponential_generator((double) MEAN_HANG_UP_TIME);
 	fifoqueue_put(sim_data->buffer, (void *) new_call);
-	sim_data->waited_call_count++;
+	sim_data->total_num_of_queue++;
 }
 \end{lstlisting}
 	
-\begin{lstlisting}[float,language=c,caption=Connect or Hang Up on Call Departure, label=list:exp4_departure]
+\begin{lstlisting}[float,language=c,caption=Hang Up \& Connect on Call Departure, label=list:exp4_departure]
 if ((free_channel = get_free_channel(simulation_run)) != NULL) {
 	int queue_size;
 	if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {

@@ -95,8 +95,7 @@ void call_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
         new_call->arrive_time = now;
         new_call->call_duration = get_call_duration();
 
-        /* Place the call in the free channel and schedule its
-       departure. */
+        /* Place the call in the free channel and schedule its departure. */
         server_put(free_channel, (void *) new_call);
         new_call->channel = free_channel;
 
