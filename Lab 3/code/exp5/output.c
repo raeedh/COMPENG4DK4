@@ -63,16 +63,18 @@ void output_results(Simulation_Run_Ptr this_simulation_run) {
 
     // printf("\n");
 
-    printf("random seed = %d \n", sim_data->random_seed);
-    printf("offered load = %d Erlangs \n", Call_ARRIVALRATE * MEAN_CALL_DURATION);
+    // printf("random seed = %d \n", sim_data->random_seed);
+    // printf("offered load = %d Erlangs \n", Call_ARRIVALRATE * MEAN_CALL_DURATION);
     // printf("call arrival count = %ld \n", sim_data->call_arrival_count);
     // printf("blocked call count = %ld \n", sim_data->blocked_call_count);
 
     xmtted_fraction = (double) (sim_data->call_arrival_count - sim_data->waited_call_count) / sim_data->call_arrival_count;
 
-    printf("Waiting probability = %.5f\n", 1 - xmtted_fraction);
+    printf("%.5f\t", 1 - xmtted_fraction);
 
-    printf("Average caller waiting time: %.5f\n", sim_data->accumulated_wait_time / sim_data->number_of_calls_processed);
+    printf("%.5f\t", sim_data->accumulated_wait_time / sim_data->number_of_calls_processed);
 
-    printf("\n");
+    printf("%.5f\n", (double) sim_data->waited_under_count / sim_data->number_of_calls_processed);
+
+    // printf("\n");
 }

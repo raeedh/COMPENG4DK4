@@ -75,7 +75,7 @@ int main(void)
     data.random_seed = random_seed;
     data.accumulated_wait_time = 0.0;
     data.waited_call_count = 0;
-    data.waited_over_count = 0;
+    data.waited_under_count = 0;
 
     /*
      * Create the packet buffer and transmission link, declared in main.h.

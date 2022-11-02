@@ -1,1 +1,44 @@
 \section*{Experiment 5}
+To simulate this case, the code was modified to add a FIFO queue where calls would be placed on call arrival if all channels are full. This queue would be checked on call departure (the only event that can free up a channel) and place a call from the queue into any empty channel if the queue contains a call. The modifications for call arrivals can be seen in Listing~\ref{list:exp4_arrival} and modifications for call departures can be seen in Listing~\ref{list:exp4_departure}. The values for $P_w$, $T_w$, $W(1 \text{min})$ were found in simulation and calculated with the given formulas for the following cases:
+\begin{enumerate}
+\item
+$\lambda = 2$, $h = 3$, $N = 10$\\
+Simulation results: $P_w = 0.1006$, $T_w = 0.0746$ min, $W(1 \text{min}) = 0.9739$\\
+Calculated value: $P_w = 0.0974$, $T_w = 0.0730$ min, $W(1 \text{min}) = 0.9743$
+
+\item
+$\lambda = 7$, $h = 2$, $N = 15$\\
+Simulation results: $P_w = 0.7198$, $T_w = 1.4224$ min, $W(1 \text{min}) = 0.5662$\\
+Calculated value: $P_w = 0.6891$, $T_w = 1.3783$ min, $W(1 \text{min}) = 0.5820$
+
+\item 
+$\lambda = 2$, $h = 7$, $N = 15$\\
+Simulation results: $P_w = 0.7198$, $T_w = 4.9785$ min, $W(1 \text{min}) = 0.3774$\\
+Calculated value: $P_w = 0.6891$, $T_w = 4.8239$ min, $W(1 \text{min}) = 0.4026$
+\end{enumerate}
+
+\begin{lstlisting}[language=c,caption=Wait on Call Arrival, label=list:exp4_arrival]
+} else {
+	/* No free channel was found. The call is placed in queue. */
+	fifoqueue_put(sim_data->buffer, (void *) new_call);
+	sim_data->waited_call_count++;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=c,caption=Wait on Call Departure, label=list:exp4_departure]
+// See if there is are calls waiting in the buffer and there is a free channel. If so, take the next one out and connect it immediately.
+if ((fifoqueue_size(sim_data->buffer) > 0) && ((free_channel = get_free_channel(simulation_run)) != NULL)) {
+	next_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
+
+	next_call->call_duration = get_call_duration();
+	next_call->waiting_time = now - next_call->arrive_time;
+
+	/* Place the call in the free channel and schedule its departure. */
+	server_put(free_channel, (void*) next_call);
+	next_call->channel = free_channel;
+
+	schedule_end_call_on_channel_event(simulation_run,
+					now + next_call->call_duration,
+					(void *) free_channel);
+}
+\end{lstlisting}
