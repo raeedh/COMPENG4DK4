@@ -5,7 +5,7 @@ do
 for i in {1..20}
 do
 	echo $i
-	make clean; mean_hang=$w num_chan=$n call_arr=$i  make all; ./run >> exp5/wN$w$n
+	make clean; mean_hang=$w num_chan=$n call_arr=$i  make all; ./run >> exp4/wN$w$n
 done
 done
 done
