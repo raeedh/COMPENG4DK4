@@ -5,7 +5,7 @@ The probability of not being served versus offered loading for different values 
 
 The mean time that customers have to wait on the queue versus offered loading for different values of $w$ and $N$ is shown in Figure~\ref{fig:exp4_delay}. We can see that the mean waiting time for 1 Erlangs of offered load depends on the number of channels, $N$, and will decrease as $N$ increases. As the mean hang-up time, $w$, increases the mean queue wait time increases.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
 \centering
 \captionsetup{justification=centering}
 \begin{tikzpicture}
@@ -50,8 +50,9 @@ The mean time that customers have to wait on the queue versus offered loading fo
 \caption{Experiment 4: Waiting Probability}
 \label{fig:exp4_prob}
 \end{figure}
+\clearpage
 
-\begin{figure}[htp]
+\begin{figure}[ht]
 \centering
 \captionsetup{justification=centering}
 \begin{tikzpicture}
@@ -96,7 +97,7 @@ The mean time that customers have to wait on the queue versus offered loading fo
 \caption{Experiment 4: Mean Delay}
 \label{fig:exp4_delay}
 \end{figure}
-\clearpage
+% \clearpage
 
 \begin{lstlisting}[language=c,caption=Hang Up \& Connect or Wait on Call Arrival, label=list:exp4_arrival]
 if ((free_channel = get_free_channel(simulation_run)) != NULL) {
