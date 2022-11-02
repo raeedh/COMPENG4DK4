@@ -1,50 +1,9 @@
 \section*{Experiment 4}
+To simulate this case, the code was modified to add a FIFO queue where calls would be placed on call arrival if all channels are full. This queue would be checked on call departure (the only event that can free up a channel) and place a call from the queue that hasn't hung up into any empty channel. The modifications for call arrivals can be seen in Listing~\ref{list:exp4_arrival} and modifications for call departures can be seen in Listing~\ref{list:exp4_departure}.
 
-\begin{figure}[htp]
-\centering
-\captionsetup{justification=centering}
-\begin{tikzpicture}
-	\begin{axis}
-		[
-		title = {Mean Waiting Time in Queue vs. Offered Load},
-		width = 0.969\textwidth,
-		%height = 150,
-		xmin = 1, xmax = 20, xtick={1,...,20},
-		ymin = 0, ymax = 450,
-		ylabel = Mean Queue Wait Time (seconds), xlabel = Offered Load (Erlangs),
-		xticklabel style={
-			/pgf/number format/fixed,
-			/pgf/number format/precision=3
-		},
-		scaled x ticks=false,
-		legend pos=north west,
-		% legend style={at={(0.5,-0.1)},anchor=north},
-		% legend columns=5,
-		% legend style={font=\scriptsize}
-		% some code for adding points
-		%nodes near coords={%
-		%\footnotesize
-		%$(\pgfmathprintnumber
-		%{\pgfkeysvalueof{/data point/x}},
-		%\pgfmathprintnumber
-		%{\pgfkeysvalueof{/data point/y}})$%
-		%},
-		]
-		% \addlegendimage{empty legend}
-		% \addlegendentry{\makebox[0pt][l]{\hspace{1.6cm}Offered Load (Erlangs)}}
-		\addplot+ [mark=o, thick] table [y=$w5n5_mean$, x=$off_load$]{./data/exp4.dat};
-		\addlegendentry{$w = 5, N = 5$}
-		\addplot+ [mark=o, thick] table [y=$w5n10_mean$, x=$off_load$]{./data/exp4.dat};
-		\addlegendentry{$w = 5, N = 10$}
-		\addplot+ [mark=o, thick] table [y=$w10n5_mean$, x=$off_load$]{./data/exp4.dat};
-		\addlegendentry{$w = 10, N = 5$}
-		\addplot+ [mark=o, thick] table [y=$w10n10_mean$, x=$off_load$]{./data/exp4.dat};
-		\addlegendentry{$w = 10, N = 10$}
-	\end{axis}
-\end{tikzpicture}
-\caption{Experiment 4: Mean Delay}
-\label{fig:exp4_delay}
-\end{figure}
+The probability of not being served versus offered loading for different values of $w$ and $N$ is shown in Figure~\ref{fig:exp4_prob}. We can see that the waiting probability for a given offered load decreases when the number of channels, $N$, increase, and does not demonstrate a significant change when the mean hang-up time, $w$, changes.
+
+The mean time that customers have to wait on the queue versus offered loading for different values of $w$ and $N$ is shown in Figure~\ref{fig:exp4_delay}. We can see that the mean waiting time for 1 Erlangs of offered load depends on the number of channels, $N$, and will decrease as $N$ increases. As the mean hang-up time, $w$, increases the mean queue wait time increases.
 
 \begin{figure}[htp]
 \centering
@@ -91,3 +50,94 @@
 \caption{Experiment 4: Waiting Probability}
 \label{fig:exp4_prob}
 \end{figure}
+
+\begin{figure}[htp]
+\centering
+\captionsetup{justification=centering}
+\begin{tikzpicture}
+	\begin{axis}
+		[
+		title = {Mean Waiting Time in Queue vs. Offered Load},
+		width = 0.969\textwidth,
+		%height = 150,
+		xmin = 1, xmax = 20, xtick={1,...,20},
+		ymin = 0, ymax = 450,
+		ylabel = Mean Queue Wait Time (seconds), xlabel = Offered Load (Erlangs),
+		xticklabel style={
+			/pgf/number format/fixed,
+			/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		legend pos=north west,
+		% legend style={at={(0.5,-0.1)},anchor=north},
+		% legend columns=5,
+		% legend style={font=\scriptsize}
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+		]
+		% \addlegendimage{empty legend}
+		% \addlegendentry{\makebox[0pt][l]{\hspace{1.6cm}Offered Load (Erlangs)}}
+		\addplot+ [mark=o, thick] table [y=$w5n5_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w5n10_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 10$}
+		\addplot+ [mark=o, thick] table [y=$w10n5_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w10n10_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 10$}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Mean Delay}
+\label{fig:exp4_delay}
+\end{figure}
+% \clearpage
+
+\begin{lstlisting}[float,language=c,caption=Wait on Call Arrival, label=list:exp4_arrival]
+} else {
+	/* No free channel was found. The call is placed in queue. */
+	fifoqueue_put(sim_data->buffer, (void *) new_call);
+	sim_data->waited_call_count++;
+}
+\end{lstlisting}
+	
+\begin{lstlisting}[float,language=c,caption=Connect or Hang Up on Call Departure, label=list:exp4_departure]
+if ((free_channel = get_free_channel(simulation_run)) != NULL) {
+	int queue_size;
+	if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {
+		for (int i = 0; i < queue_size; ++i) {
+			new_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
+
+			if (new_call->hang_up_time < now) {
+				sim_data->call_hung_up_count++;
+				sim_data->accumulated_queue_wait_time += new_call->hang_up_time - new_call->arrive_time;
+				xfree((void *) new_call);
+				new_call = NULL;
+				continue;
+			}
+
+			sim_data->accumulated_queue_wait_time += now - new_call->arrive_time;
+			break;
+		}
+
+		// If the queue only contained customers that have hung up, we have nothing to do
+		if (new_call == NULL) {
+			return;
+		}
+
+		new_call->arrive_time = now;
+		new_call->call_duration = get_call_duration();
+
+		/* Place the call in the free channel and schedule its departure. */
+		server_put(free_channel, (void *) new_call);
+		new_call->channel = free_channel;
+
+		schedule_end_call_on_channel_event(simulation_run, now + new_call->call_duration, (void *) free_channel);
+	}
+}
+\end{lstlisting}
