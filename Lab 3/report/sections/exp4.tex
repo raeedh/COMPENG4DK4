@@ -1,0 +1,93 @@
+\section*{Experiment 4}
+
+\begin{figure}[htp]
+\centering
+\captionsetup{justification=centering}
+\begin{tikzpicture}
+	\begin{axis}
+		[
+		title = {Mean Waiting Time in Queue vs. Offered Load},
+		width = 0.969\textwidth,
+		%height = 150,
+		xmin = 1, xmax = 20, xtick={1,...,20},
+		ymin = 0, ymax = 450,
+		ylabel = Mean Queue Wait Time (seconds), xlabel = Offered Load (Erlangs),
+		xticklabel style={
+			/pgf/number format/fixed,
+			/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		legend pos=north west,
+		% legend style={at={(0.5,-0.1)},anchor=north},
+		% legend columns=5,
+		% legend style={font=\scriptsize}
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+		]
+		% \addlegendimage{empty legend}
+		% \addlegendentry{\makebox[0pt][l]{\hspace{1.6cm}Offered Load (Erlangs)}}
+		\addplot+ [mark=o, thick] table [y=$w5n5_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w5n10_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 10$}
+		\addplot+ [mark=o, thick] table [y=$w10n5_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w10n10_mean$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 10$}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Mean Delay}
+\label{fig:exp4_delay}
+\end{figure}
+
+\begin{figure}[htp]
+\centering
+\captionsetup{justification=centering}
+\begin{tikzpicture}
+	\begin{axis}
+		[
+		title = {Waiting Probability vs. Offered Load},
+		width = 0.969\textwidth,
+		%height = 150,
+		xmin = 1, xmax = 20, xtick={1,...,20},
+		ymin = 0, ymax = 1,
+		ylabel = Probability of Customer Waiting, xlabel = Offered Load (Erlangs),
+		xticklabel style={
+			/pgf/number format/fixed,
+			/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		legend pos=north west,
+		% legend style={at={(0.5,-0.1)},anchor=north},
+		% legend columns=5,
+		% legend style={font=\scriptsize}
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+		]
+		% \addlegendimage{empty legend}
+		% \addlegendentry{\makebox[0pt][l]{\hspace{1.6cm}Offered Load (Erlangs)}}
+		\addplot+ [mark=o, thick] table [y=$w5n5_prob$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w5n10_prob$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 5, N = 10$}
+		\addplot+ [mark=o, thick] table [y=$w10n5_prob$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 5$}
+		\addplot+ [mark=o, thick] table [y=$w10n10_prob$, x=$off_load$]{./data/exp4.dat};
+		\addlegendentry{$w = 10, N = 10$}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Waiting Probability}
+\label{fig:exp4_prob}
+\end{figure}
