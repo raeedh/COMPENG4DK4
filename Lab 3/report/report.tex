@@ -19,7 +19,16 @@
 \usepackage{listings}
 \usepackage{lstautogobble}
 \usepackage[framed, numbered]{matlab-prettifier}
-\lstset{inputpath=../../code,frame=single,breaklines=true,numbers=left}
+
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+\lstset{
+    frame=single,
+    breaklines=true,
+    numbers=left,
+    backgroundcolor=\color{backgroundColour},
+    keywordstyle=\color{red},
+    identifierstyle=\color{blue},
+    commentstyle=\color{gray}}
 
 \titleformat*{\section}{\large\bfseries}
 %\allowdisplaybreaks

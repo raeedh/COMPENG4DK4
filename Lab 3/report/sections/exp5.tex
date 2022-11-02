@@ -1,5 +1,5 @@
 \section*{Experiment 5}
-To simulate this case, the code was modified to add a FIFO queue where calls would be placed on call arrival if all channels are full. This queue would be checked on call departure (the only event that can free up a channel) and place a call from the queue into any empty channel if the queue contains a call. The modifications for call arrivals can be seen in Listing~\ref{list:exp4_arrival} and modifications for call departures can be seen in Listing~\ref{list:exp4_departure}. The values for $P_w$, $T_w$, $W(1 \text{min})$ were found in simulation and calculated with the given formulas for the following cases:
+To simulate this case, the code was modified to add a FIFO queue where calls would be placed on call arrival if all channels are full. This queue would be checked on call departure (the only event that can free up a channel) and place a call from the queue into any empty channel if the queue contains a call. The modifications for call arrivals can be seen in Listing~\ref{list:exp5_arrival} and modifications for call departures can be seen in Listing~\ref{list:exp5_departure}. The values for $P_w$, $T_w$, $W(1 \text{min})$ were found in simulation and calculated with the given formulas for the following cases:
 \begin{enumerate}
 \item
 $\lambda = 2$, $h = 3$, $N = 10$\\
@@ -17,7 +17,9 @@ Simulation results: $P_w = 0.7198$, $T_w = 4.9785$ min, $W(1 \text{min}) = 0.377
 Calculated value: $P_w = 0.6891$, $T_w = 4.8239$ min, $W(1 \text{min}) = 0.4026$
 \end{enumerate}
 
-\begin{lstlisting}[language=c,caption=Wait on Call Arrival, label=list:exp4_arrival]
+The results are largely similar. There are minor discrepancies in the results as not all customers that enter the queue will be served at the end of the simulation, resulting in some undercounting or overcounting of some statistics.
+
+\begin{lstlisting}[language=c,caption=Wait on Call Arrival, label=list:exp5_arrival]
 } else {
 	/* No free channel was found. The call is placed in queue. */
 	fifoqueue_put(sim_data->buffer, (void *) new_call);
@@ -25,7 +27,7 @@ Calculated value: $P_w = 0.6891$, $T_w = 4.8239$ min, $W(1 \text{min}) = 0.4026$
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=c,caption=Wait on Call Departure, label=list:exp4_departure]
+\begin{lstlisting}[language=c,caption=Wait on Call Departure, label=list:exp5_departure]
 // See if there is are calls waiting in the buffer and there is a free channel. If so, take the next one out and connect it immediately.
 if ((fifoqueue_size(sim_data->buffer) > 0) && ((free_channel = get_free_channel(simulation_run)) != NULL)) {
 	next_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
