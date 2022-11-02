@@ -42,15 +42,19 @@ typedef enum { XMTTING, WAITING } Call_Status;
 typedef struct _call_ {
     double arrive_time;
     double call_duration;
+    double hang_up_time;
     Channel_Ptr channel;
 } Call, *Call_Ptr;
 
 typedef struct _simulation_run_data_ {
+    Fifoqueue_Ptr buffer;
     Channel_Ptr *channels;
     long int blip_counter;
     long int call_arrival_count;
-    long int blocked_call_count;
+    long int call_hung_up_count;
     long int number_of_calls_processed;
+    long int total_num_of_queue;
+    double accumulated_queue_wait_time;
     double accumulated_call_time;
     unsigned random_seed;
 } Simulation_Run_Data, *Simulation_Run_Data_Ptr;

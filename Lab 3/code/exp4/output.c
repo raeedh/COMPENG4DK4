@@ -56,7 +56,7 @@ void output_progress_msg_to_screen(Simulation_Run_Ptr this_simulation_run) {
 /*******************************************************************************/
 
 void output_results(Simulation_Run_Ptr this_simulation_run) {
-    double xmtted_fraction;
+    double xmtted_fraction, mean_queue_wait_time;
     Simulation_Run_Data_Ptr sim_data;
 
     sim_data = (Simulation_Run_Data_Ptr) simulation_run_data(this_simulation_run);
@@ -66,11 +66,14 @@ void output_results(Simulation_Run_Ptr this_simulation_run) {
     printf("random seed = %d \n", sim_data->random_seed);
     printf("offered load = %d Erlangs \n", Call_ARRIVALRATE * MEAN_CALL_DURATION);
     printf("call arrival count = %ld \n", sim_data->call_arrival_count);
-    printf("blocked call count = %ld \n", sim_data->blocked_call_count);
+    printf("call hung up count = %ld \n", sim_data->call_hung_up_count);
 
-    xmtted_fraction = (double) (sim_data->call_arrival_count - sim_data->blocked_call_count) / sim_data->call_arrival_count;
+    xmtted_fraction = (double) (sim_data->call_arrival_count - sim_data->call_hung_up_count) / sim_data->call_arrival_count;
 
-    printf("Blocking probability = %.5f (Service fraction = %.5f)\n", 1 - xmtted_fraction, xmtted_fraction);
+    printf("Hang-up probability = %.5f (Service fraction = %.5f)\n", 1 - xmtted_fraction, xmtted_fraction);
 
+    mean_queue_wait_time = sim_data->accumulated_queue_wait_time / sim_data->total_num_of_queue;
+
+    printf("Mean queue wait time = %.5f\n", mean_queue_wait_time);
     printf("\n");
 }

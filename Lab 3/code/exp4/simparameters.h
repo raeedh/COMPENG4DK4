@@ -25,26 +25,23 @@
 
 /*******************************************************************************/
 
-#include "cleanup.h"
-#include "main.h"
-#include "simlib.h"
-#include "simparameters.h"
+#ifndef _SIMPARAMETERS_H_
+#define _SIMPARAMETERS_H_
 
 /*******************************************************************************/
 
-void cleanup(Simulation_Run_Ptr this_simulation_run) {
-    int i;
-    Simulation_Run_Data_Ptr sim_data;
+#define Call_ARRIVALRATE 3   /* calls/minute */
+#define MEAN_CALL_DURATION 3 /* minutes */
+#define MEAN_HANG_UP_TIME 5  /* minutes */
+#define RUNLENGTH 50e6       /* number of successful calls */
+#define BLIPRATE 1e3
+#define NUMBER_OF_CHANNELS 11
 
-    sim_data = (Simulation_Run_Data_Ptr) simulation_run_data(this_simulation_run);
+/* Comma separated list of random seeds to run. */
+#define RANDOM_SEED_LIST                                                                                                                   \
+    400188200, 1882004, 18820040, 188200400, 882004001, 820040018, 200400188, 4001882, 40018820, 400190637, 1906374, 19063740, 190637400,  \
+            906374001, 63740019, 637400190, 374001906, 740019063
 
-    /* Clean out the channels. */
-    for (i = 0; i < NUMBER_OF_CHANNELS; i++) {
-        if ((*(sim_data->channels + i))->state == BUSY)
-            xfree(server_get(*(sim_data->channels + i)));
-    }
-    xfree(sim_data->channels);
+/*******************************************************************************/
 
-    /* Clean up the simulation_run. */
-    simulation_run_free_memory(this_simulation_run);
-}
+#endif /* simparameters.h */

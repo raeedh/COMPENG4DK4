@@ -54,6 +54,7 @@ int main(void) {
    */
 
     while ((random_seed = RANDOM_SEEDS[j++]) != 0) {
+
         /* Create a new simulation_run. This gives a clock and eventlist. */
         simulation_run = simulation_run_new();
 
@@ -63,10 +64,14 @@ int main(void) {
         /* Initialize our simulation_run data variables. */
         data.blip_counter = 0;
         data.call_arrival_count = 0;
-        data.blocked_call_count = 0;
+        data.call_hung_up_count = 0;
         data.number_of_calls_processed = 0;
+        data.total_num_of_queue = 0;
+        data.accumulated_queue_wait_time = 0.0;
         data.accumulated_call_time = 0.0;
         data.random_seed = random_seed;
+
+        data.buffer = fifoqueue_new();
 
         /* Create the channels. */
         data.channels = (Channel_Ptr *) xcalloc((int) NUMBER_OF_CHANNELS, sizeof(Channel_Ptr));

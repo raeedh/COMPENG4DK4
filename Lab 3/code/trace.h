@@ -42,12 +42,13 @@
 #define TRACE IGNORE
 #endif
 
-#define TRACEF(a) { printf("%s @ line %u\n", __FILE__, __LINE__); \
-    a;								  \
-    fflush(stdout); }
+#define TRACEF(a)                                                                                                                          \
+    {                                                                                                                                      \
+        printf("%s @ line %u\n", __FILE__, __LINE__);                                                                                      \
+        a;                                                                                                                                 \
+        fflush(stdout);                                                                                                                    \
+    }
 
 /**********************************************************************/
 
 #endif /* trace.h */
-
-

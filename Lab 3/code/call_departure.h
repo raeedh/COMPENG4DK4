@@ -36,15 +36,10 @@
  *
  */
 
-void
-end_call_on_channel_event(Simulation_Run_Ptr ThisSimulation_Run, void*);
+void end_call_on_channel_event(Simulation_Run_Ptr ThisSimulation_Run, void *);
 
-long int
-schedule_end_call_on_channel_event(Simulation_Run_Ptr, double, void*);
+long int schedule_end_call_on_channel_event(Simulation_Run_Ptr, double, void *);
 
 /*******************************************************************************/
 
 #endif /* call_departure.h */
-
-
-

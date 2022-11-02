@@ -36,11 +36,8 @@
  *
  */
 
-extern void cleanup(Simulation_Run*);
+extern void cleanup(Simulation_Run *);
 
 /**********************************************************************/
 
 #endif /* cleanup.h */
-
-
-

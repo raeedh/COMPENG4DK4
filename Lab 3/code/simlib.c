@@ -22,12 +22,12 @@
 
 /*******************************************************************************/
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
-#include "trace.h"
 #include "simlib.h"
+#include "trace.h"
 
 /*******************************************************************************/
 
@@ -35,20 +35,15 @@
  * Prototype static functions that are local to simlib.
  */
 
-static Clock_Ptr
-clock_new(void);
+static Clock_Ptr clock_new(void);
 
-static void
-simulation_run_set_time (Simulation_Run_Ptr, double);
+static void simulation_run_set_time(Simulation_Run_Ptr, double);
 
-static Eventlist_Ptr
-eventlist_new(void);
+static Eventlist_Ptr eventlist_new(void);
 
-static Eventlist_Ptr
-simulation_run_get_eventlist(Simulation_Run_Ptr);
+static Eventlist_Ptr simulation_run_get_eventlist(Simulation_Run_Ptr);
 
-static Event_Container_Ptr
-simulation_run_get_event(Simulation_Run_Ptr);
+static Event_Container_Ptr simulation_run_get_event(Simulation_Run_Ptr);
 
 #ifdef TRACE_ON /* This is only used when tracing is active. */
 static void event_print_type(Event);
@@ -61,72 +56,59 @@ static void event_print_type(Event);
  * event list, and a data pointer to simulation_run data.
  */
 
-Simulation_Run_Ptr
-simulation_run_new(void)
-{
-  Simulation_Run_Ptr new_simulation_run;
+Simulation_Run_Ptr simulation_run_new(void) {
+    Simulation_Run_Ptr new_simulation_run;
 
-  new_simulation_run = (Simulation_Run_Ptr) xmalloc(sizeof(Simulation_Run));
-  new_simulation_run->eventlist = eventlist_new();
-  new_simulation_run->clock = clock_new();
-  new_simulation_run->data = NULL;
-  return new_simulation_run;
+    new_simulation_run = (Simulation_Run_Ptr) xmalloc(sizeof(Simulation_Run));
+    new_simulation_run->eventlist = eventlist_new();
+    new_simulation_run->clock = clock_new();
+    new_simulation_run->data = NULL;
+    return new_simulation_run;
 }
 
 /*
  * When a new simulation_run is defined and created, a clock is created which is
  * part of the simulation_run.
  */
- 
-static
-Clock_Ptr clock_new (void)
-{
-  Clock_Ptr new_clock;
 
-  new_clock = (Clock_Ptr) xmalloc(sizeof(Clock));
-  new_clock->time = 0.0;
-  return new_clock;
+static Clock_Ptr clock_new(void) {
+    Clock_Ptr new_clock;
+
+    new_clock = (Clock_Ptr) xmalloc(sizeof(Clock));
+    new_clock->time = 0.0;
+    return new_clock;
 }
 
 /*
  * Given a pointer to a simulation_run, find out the current clock time.
  */
 
-double
-simulation_run_get_time (Simulation_Run_Ptr this_simulation_run)
-{
-  return this_simulation_run->clock->time;
+double simulation_run_get_time(Simulation_Run_Ptr this_simulation_run) {
+    return this_simulation_run->clock->time;
 }
 
 /*
  * Given a pointer to a simulation_run, set the clock time.
  */
 
-static
-void simulation_run_set_time (Simulation_Run_Ptr this_simulation_run,
-			      double time)
-{
-  this_simulation_run->clock->time = time;
+static void simulation_run_set_time(Simulation_Run_Ptr this_simulation_run, double time) {
+    this_simulation_run->clock->time = time;
 }
 
 /*
  * Given a pointer to a simulation_run, get simulation_run data.
  */
 
-void *
-simulation_run_data (Simulation_Run_Ptr this_simulation_run)
-{
-  return this_simulation_run->data;
+void *simulation_run_data(Simulation_Run_Ptr this_simulation_run) {
+    return this_simulation_run->data;
 }
 
 /*
  * Given a pointer to a simulation_run, put simulation_run data.
  */
 
-void
-simulation_run_set_data (Simulation_Run_Ptr this_simulation_run, void * data)
-{
-  this_simulation_run->data = data;
+void simulation_run_set_data(Simulation_Run_Ptr this_simulation_run, void *data) {
+    this_simulation_run->data = data;
 }
 
 
@@ -137,83 +119,78 @@ simulation_run_set_data (Simulation_Run_Ptr this_simulation_run, void * data)
  * event function is called. The event list itself is a double linked list.
  */
 
-long int
-simulation_run_schedule_event(Simulation_Run_Ptr simulation_run,
-			      Event new_event, double new_event_time)
-{
-  Event_Container_Ptr current_container, new_container, 
-    next_container;
+long int simulation_run_schedule_event(Simulation_Run_Ptr simulation_run, Event new_event, double new_event_time) {
+    Event_Container_Ptr current_container, new_container, next_container;
 
-  double current_time;
-  Eventlist_Ptr event_list;
-  static long int event_id = 1;
+    double current_time;
+    Eventlist_Ptr event_list;
+    static long int event_id = 1;
 
-  current_time = simulation_run_get_time(simulation_run);
-  event_list = simulation_run_get_eventlist(simulation_run);
+    current_time = simulation_run_get_time(simulation_run);
+    event_list = simulation_run_get_eventlist(simulation_run);
 
-  TRACE(printf("At %.3f : ", current_time);)
-  TRACE(event_print_type(new_event);)
-  TRACE(printf("Scheduled for  %.3f \n", new_event_time);)
+    TRACE(printf("At %.3f : ", current_time);)
+    TRACE(event_print_type(new_event);)
+    TRACE(printf("Scheduled for  %.3f \n", new_event_time);)
 
-  /* Test for time scheduling error. */
-  if (new_event_time < current_time) {
-    printf("Error: Scheduling backwards in time: ");
-    printf("Event time = %f (Clock time = %f) \n", new_event_time, 
-    current_time);
-    printf("Event scheduled = \"%s\"\n", new_event.description);
-    exit(1);
-  }
+    /* Test for time scheduling error. */
+    if (new_event_time < current_time) {
+        printf("Error: Scheduling backwards in time: ");
+        printf("Event time = %f (Clock time = %f) \n", new_event_time, current_time);
+        printf("Event scheduled = \"%s\"\n", new_event.description);
+        exit(1);
+    }
 
-  new_container = (Event_Container_Ptr) xmalloc(sizeof(Event_Container));
-  new_container->occurrence_time = new_event_time;
-  new_container->event = new_event;
-  new_container->next_container = NULL;
-  new_container->previous_container = NULL;
-  new_container->event_id = event_id;
+    new_container = (Event_Container_Ptr) xmalloc(sizeof(Event_Container));
+    new_container->occurrence_time = new_event_time;
+    new_container->event = new_event;
+    new_container->next_container = NULL;
+    new_container->previous_container = NULL;
+    new_container->event_id = event_id;
 
-  if (event_list->size == 0) {
-    /* The list is empty. */
-    event_list->front_ptr = new_container;
-    event_list->back_ptr = new_container;
+    if (event_list->size == 0) {
+        /* The list is empty. */
+        event_list->front_ptr = new_container;
+        event_list->back_ptr = new_container;
+        event_list->size++;
+        return event_id++;
+    }
+
+    if (event_list->front_ptr->occurrence_time > new_event_time) {
+        /* Add to front of the list. */
+        event_list->front_ptr->previous_container = new_container;
+        new_container->next_container = event_list->front_ptr;
+        event_list->front_ptr = new_container;
+
+        event_list->size++;
+        return event_id++;
+    }
+
+    if (event_list->back_ptr->occurrence_time <= new_event_time) {
+        /* Add to the back of the list. */
+        event_list->back_ptr->next_container = new_container;
+        new_container->previous_container = event_list->back_ptr;
+        event_list->back_ptr = new_container;
+
+        event_list->size++;
+        return event_id++;
+    }
+
+    /* Add to the middle of the list. */
+    current_container = event_list->front_ptr;
+    next_container = event_list->front_ptr->next_container;
+
+    while (next_container->occurrence_time <= new_event_time) {
+        current_container = next_container;
+        next_container = current_container->next_container;
+    }
+    current_container->next_container = new_container;
+    new_container->previous_container = current_container;
+    next_container->previous_container = new_container;
+    new_container->next_container = next_container;
+
     event_list->size++;
     return event_id++;
-  }
-
-  if (event_list->front_ptr->occurrence_time > new_event_time) {
-    /* Add to front of the list. */
-    event_list->front_ptr->previous_container = new_container;
-    new_container->next_container = event_list->front_ptr;
-    event_list->front_ptr = new_container;
-
-    event_list->size++;
-    return event_id++;
-  }
-
-  if (event_list->back_ptr->occurrence_time <= new_event_time) {
-    /* Add to the back of the list. */
-    event_list->back_ptr->next_container = new_container;
-    new_container->previous_container = event_list->back_ptr;
-    event_list->back_ptr = new_container;
-
-    event_list->size++;
-    return event_id++;
-  }
-
-  /* Add to the middle of the list. */
-  current_container = event_list->front_ptr;
-  next_container = event_list->front_ptr->next_container;
-
-  while(next_container->occurrence_time <= new_event_time) {
-    current_container = next_container;
-    next_container = current_container->next_container;
-  }
-  current_container->next_container = new_container;
-  new_container->previous_container = current_container;
-  next_container->previous_container = new_container;
-  new_container->next_container = next_container;
-
-  event_list->size++;
-  return event_id++;
 }
 
 /*
@@ -222,61 +199,56 @@ simulation_run_schedule_event(Simulation_Run_Ptr simulation_run,
  * requested event does not exist, it will return a NULL pointer.
  */
 
-void *
-simulation_run_deschedule_event(Simulation_Run_Ptr simulation_run,
-				long int event_id)
-{
-  int i;
-  Event_Container_Ptr current_container, found_container=NULL,
-    next_container, previous_container;
-  void * content_ptr = NULL;
+void *simulation_run_deschedule_event(Simulation_Run_Ptr simulation_run, long int event_id) {
+    int i;
+    Event_Container_Ptr current_container, found_container = NULL, next_container, previous_container;
+    void *content_ptr = NULL;
 
-  Eventlist_Ptr event_list;
+    Eventlist_Ptr event_list;
 
-  event_list = simulation_run_get_eventlist(simulation_run);
+    event_list = simulation_run_get_eventlist(simulation_run);
 
-  current_container = event_list->front_ptr;
-  next_container = current_container->next_container;
+    current_container = event_list->front_ptr;
+    next_container = current_container->next_container;
 
-  for(i=0; i<event_list->size; i++) {
+    for (i = 0; i < event_list->size; i++) {
 
-    if(current_container->event_id == event_id) {
+        if (current_container->event_id == event_id) {
 
-      found_container = current_container;
-      previous_container = found_container->previous_container;
-      next_container = found_container->next_container;
+            found_container = current_container;
+            previous_container = found_container->previous_container;
+            next_container = found_container->next_container;
 
-      /* Front of list. Adjust the front pointer. */
-      if (event_list->front_ptr == found_container)
-        event_list->front_ptr = next_container;
+            /* Front of list. Adjust the front pointer. */
+            if (event_list->front_ptr == found_container)
+                event_list->front_ptr = next_container;
 
-      /* Back of list. Adjust the back pointer (could be both fron and
+            /* Back of list. Adjust the back pointer (could be both fron and
 	 back). */
-      if (event_list->back_ptr == found_container)
-        event_list->back_ptr = previous_container;
+            if (event_list->back_ptr == found_container)
+                event_list->back_ptr = previous_container;
 
-      /* If the next event exists, adjust its previous event pointer. */
-      if (next_container != NULL)
-        next_container->previous_container = previous_container;
+            /* If the next event exists, adjust its previous event pointer. */
+            if (next_container != NULL)
+                next_container->previous_container = previous_container;
 
-      /* If the previous event exists, adjust its next event pointer. */
-      if (previous_container != NULL)
-        previous_container->next_container = next_container;
+            /* If the previous event exists, adjust its next event pointer. */
+            if (previous_container != NULL)
+                previous_container->next_container = next_container;
 
-      content_ptr = found_container->data_ptr;
+            content_ptr = found_container->data_ptr;
 
-      TRACE(printf("At %.2f : ", simulation_run_get_time(simulation_run));)
-      TRACE(event_print_type(found_container->event);)
-      TRACE(printf("descheduled\n");)
+            TRACE(printf("At %.2f : ", simulation_run_get_time(simulation_run));)
+            TRACE(event_print_type(found_container->event);)
+            TRACE(printf("descheduled\n");)
 
-      free((void*) found_container);
-      event_list->size--;
-      break;
+            free((void *) found_container);
+            event_list->size--;
+            break;
+        }
+        current_container = current_container->next_container;
     }
-    current_container = current_container->next_container;
-
-  }
-  return content_ptr;
+    return content_ptr;
 }
 
 /*
@@ -285,32 +257,30 @@ simulation_run_deschedule_event(Simulation_Run_Ptr simulation_run,
  * its event function.
  */
 
-static Event_Container_Ptr
-simulation_run_get_event(Simulation_Run_Ptr simulation_run)
-{
-  Eventlist_Ptr event_list;
-  Event_Container_Ptr top_container;
+static Event_Container_Ptr simulation_run_get_event(Simulation_Run_Ptr simulation_run) {
+    Eventlist_Ptr event_list;
+    Event_Container_Ptr top_container;
 
-  event_list = simulation_run_get_eventlist(simulation_run);
+    event_list = simulation_run_get_eventlist(simulation_run);
 
-  if (event_list->size == 0) {
-    printf("*** Error: No Events are scheduled ... cannot continue! ***\n");
-    exit(1);
-  }
+    if (event_list->size == 0) {
+        printf("*** Error: No Events are scheduled ... cannot continue! ***\n");
+        exit(1);
+    }
 
-  top_container = event_list->front_ptr;
+    top_container = event_list->front_ptr;
 
-  if (event_list->size == 1) {
-    event_list->front_ptr = NULL;
-    event_list->back_ptr = NULL;
-    event_list->size--;
-  } else {
+    if (event_list->size == 1) {
+        event_list->front_ptr = NULL;
+        event_list->back_ptr = NULL;
+        event_list->size--;
+    } else {
 
-    top_container->next_container->previous_container = NULL;
-    event_list->front_ptr = top_container->next_container;
-    event_list->size--;
-  }
-  return (top_container);
+        top_container->next_container->previous_container = NULL;
+        event_list->front_ptr = top_container->next_container;
+        event_list->size--;
+    }
+    return (top_container);
 }
 
 /*
@@ -318,44 +288,38 @@ simulation_run_get_event(Simulation_Run_Ptr simulation_run)
  * event function.
  */
 
-void
-simulation_run_execute_event(Simulation_Run_Ptr simulation_run)
-{
-  Event_Container_Ptr current_container;
+void simulation_run_execute_event(Simulation_Run_Ptr simulation_run) {
+    Event_Container_Ptr current_container;
 
-  current_container = simulation_run_get_event(simulation_run);
-  simulation_run_set_time(simulation_run, 
-			  current_container->occurrence_time);
+    current_container = simulation_run_get_event(simulation_run);
+    simulation_run_set_time(simulation_run, current_container->occurrence_time);
 
-  TRACE(printf("\n");)
-  TRACE(event_print_type(current_container->event);)
-  TRACE(printf("occurring at %.3f\n", simulation_run_get_time(simulation_run));)
+    TRACE(printf("\n");)
+    TRACE(event_print_type(current_container->event);)
+    TRACE(printf("occurring at %.3f\n", simulation_run_get_time(simulation_run));)
 
-  (*(current_container->event.function))(simulation_run,
-			current_container->event.attachment);
-  xfree(current_container);
+    (*(current_container->event.function))(simulation_run, current_container->event.attachment);
+    xfree(current_container);
 }
 
 /*
  * Free up simulation_run memory.
  */
 
-void
-simulation_run_free_memory(Simulation_Run_Ptr this_simulation_run)
-{
-  Eventlist_Ptr event_list;
+void simulation_run_free_memory(Simulation_Run_Ptr this_simulation_run) {
+    Eventlist_Ptr event_list;
 
-  /* Clean out the event list. */
-  event_list = this_simulation_run->eventlist;
+    /* Clean out the event list. */
+    event_list = this_simulation_run->eventlist;
 
-  while (event_list->size > 0) {
-    xfree((void*) simulation_run_get_event(this_simulation_run));
-  }
+    while (event_list->size > 0) {
+        xfree((void *) simulation_run_get_event(this_simulation_run));
+    }
 
-  /* Clean up the simulation_run. */
-  xfree(this_simulation_run->eventlist);
-  xfree(this_simulation_run->clock);
-  xfree(this_simulation_run);
+    /* Clean up the simulation_run. */
+    xfree(this_simulation_run->eventlist);
+    xfree(this_simulation_run->clock);
+    xfree(this_simulation_run);
 }
 
 /*
@@ -365,27 +329,23 @@ simulation_run_free_memory(Simulation_Run_Ptr this_simulation_run)
  * created. The event list is included in the simulation_run.
  */
 
-static Eventlist_Ptr
-eventlist_new(void)
-{
-  Eventlist_Ptr new_event_list;
+static Eventlist_Ptr eventlist_new(void) {
+    Eventlist_Ptr new_event_list;
 
-  new_event_list = (Eventlist_Ptr) xmalloc(sizeof(Eventlist));
+    new_event_list = (Eventlist_Ptr) xmalloc(sizeof(Eventlist));
 
-  new_event_list->front_ptr = NULL;
-  new_event_list->back_ptr = NULL;
-  new_event_list->size = 0;
-  return new_event_list;
+    new_event_list->front_ptr = NULL;
+    new_event_list->back_ptr = NULL;
+    new_event_list->size = 0;
+    return new_event_list;
 }
 
 /*
  * Get a pointer to the eventlist. This is intended for use only by simlib.
  */
 
-static Eventlist_Ptr
-simulation_run_get_eventlist(Simulation_Run_Ptr simulation_run)
-{
-  return simulation_run->eventlist;
+static Eventlist_Ptr simulation_run_get_eventlist(Simulation_Run_Ptr simulation_run) {
+    return simulation_run->eventlist;
 }
 
 /*
@@ -394,10 +354,8 @@ simulation_run_get_eventlist(Simulation_Run_Ptr simulation_run)
 
 #ifdef TRACE_ON
 
-static void
-event_print_type(Event event)
-{
-  printf("%s ", event.description);
+static void event_print_type(Event event) {
+    printf("%s ", event.description);
 }
 
 #endif /* TRACE_ON */
@@ -409,16 +367,14 @@ event_print_type(Event event)
  * Fifoqueue. The FIFO queue is a singly linked list.
  */
 
-Fifoqueue_Ptr
-fifoqueue_new(void)
-{
-  Fifoqueue_Ptr queue_id;
+Fifoqueue_Ptr fifoqueue_new(void) {
+    Fifoqueue_Ptr queue_id;
 
-  queue_id = (Fifoqueue_Ptr) xmalloc(sizeof(Fifoqueue));
-  queue_id->size = 0;
-  queue_id->front_ptr = NULL;
-  queue_id->back_ptr  = NULL;
-  return queue_id;
+    queue_id = (Fifoqueue_Ptr) xmalloc(sizeof(Fifoqueue));
+    queue_id->size = 0;
+    queue_id->front_ptr = NULL;
+    queue_id->back_ptr = NULL;
+    return queue_id;
 }
 
 /*
@@ -426,24 +382,21 @@ fifoqueue_new(void)
  * pointer.
  */
 
-void
-fifoqueue_put(Fifoqueue_Ptr queue_ptr, void * content_ptr)
-{
-  Queue_Container_Ptr queue_container_ptr;
+void fifoqueue_put(Fifoqueue_Ptr queue_ptr, void *content_ptr) {
+    Queue_Container_Ptr queue_container_ptr;
 
-  queue_container_ptr = (Queue_Container_Ptr) xmalloc(sizeof(Queue_Container));
-  queue_container_ptr->content_ptr = content_ptr;
-  queue_container_ptr->next_ptr = NULL;
+    queue_container_ptr = (Queue_Container_Ptr) xmalloc(sizeof(Queue_Container));
+    queue_container_ptr->content_ptr = content_ptr;
+    queue_container_ptr->next_ptr = NULL;
 
-  if (queue_ptr->size == 0) {
-    queue_ptr->front_ptr = queue_container_ptr;
-    queue_ptr->back_ptr =  queue_container_ptr;
-  }
-  else {
-    queue_ptr->back_ptr->next_ptr = queue_container_ptr;
-    queue_ptr->back_ptr = queue_container_ptr;
-  }
-  queue_ptr->size++;
+    if (queue_ptr->size == 0) {
+        queue_ptr->front_ptr = queue_container_ptr;
+        queue_ptr->back_ptr = queue_container_ptr;
+    } else {
+        queue_ptr->back_ptr->next_ptr = queue_container_ptr;
+        queue_ptr->back_ptr = queue_container_ptr;
+    }
+    queue_ptr->size++;
 }
 
 /*
@@ -451,45 +404,39 @@ fifoqueue_put(Fifoqueue_Ptr queue_ptr, void * content_ptr)
  * pointer.
  */
 
-void *
-fifoqueue_get(Fifoqueue_Ptr queue_ptr)
-{
-  Queue_Container_Ptr removed_container_ptr;
-  void* content_ptr;
+void *fifoqueue_get(Fifoqueue_Ptr queue_ptr) {
+    Queue_Container_Ptr removed_container_ptr;
+    void *content_ptr;
 
-  if (queue_ptr->size > 0) {
-    removed_container_ptr = queue_ptr->front_ptr;
-    queue_ptr->front_ptr = removed_container_ptr->next_ptr;
-    content_ptr = removed_container_ptr->content_ptr;
-    free((char*) removed_container_ptr);
+    if (queue_ptr->size > 0) {
+        removed_container_ptr = queue_ptr->front_ptr;
+        queue_ptr->front_ptr = removed_container_ptr->next_ptr;
+        content_ptr = removed_container_ptr->content_ptr;
+        free((char *) removed_container_ptr);
 
-    if(queue_ptr->size == 1) queue_ptr->back_ptr = NULL;
-    queue_ptr->size--;
-  }
-  else {
-    content_ptr = NULL;
-  }
-  return content_ptr;
+        if (queue_ptr->size == 1)
+            queue_ptr->back_ptr = NULL;
+        queue_ptr->size--;
+    } else {
+        content_ptr = NULL;
+    }
+    return content_ptr;
 }
 
 /*
  * Get the number of objects currently in the Fifoqueue.
  */
 
-int
-fifoqueue_size(Fifoqueue_Ptr queue_ptr)
-{
-  return queue_ptr->size;
+int fifoqueue_size(Fifoqueue_Ptr queue_ptr) {
+    return queue_ptr->size;
 }
 
 /*
  * Get a pointer to the object at the front of the Fifoqueue.
  */
 
-void*
-fifoqueue_see_front(Fifoqueue_Ptr queue_ptr)
-{
-  return queue_ptr->front_ptr->content_ptr;
+void *fifoqueue_see_front(Fifoqueue_Ptr queue_ptr) {
+    return queue_ptr->front_ptr->content_ptr;
 }
 
 /*
@@ -498,15 +445,13 @@ fifoqueue_see_front(Fifoqueue_Ptr queue_ptr)
  * Create and return a pointer to an empty server. The server is marked FREE.
  */
 
-Server_Ptr
-server_new(void)
-{
-  Server_Ptr server_ptr;
+Server_Ptr server_new(void) {
+    Server_Ptr server_ptr;
 
-  server_ptr = (Server_Ptr) xmalloc(sizeof(Server));
-  server_ptr->customer_in_service = NULL;
-  server_ptr->state = FREE;
-  return server_ptr;
+    server_ptr = (Server_Ptr) xmalloc(sizeof(Server));
+    server_ptr->customer_in_service = NULL;
+    server_ptr->state = FREE;
+    return server_ptr;
 }
 
 /*
@@ -514,16 +459,14 @@ server_new(void)
  * server. The server is marked BUSY.
  */
 
-void
-server_put(Server_Ptr server, void* content_ptr)
-{
-  if (server_state(server) == BUSY) {
-      printf("Error: Cannot put into busy server.\n");
-      exit(1);
+void server_put(Server_Ptr server, void *content_ptr) {
+    if (server_state(server) == BUSY) {
+        printf("Error: Cannot put into busy server.\n");
+        exit(1);
     }
 
-  server->customer_in_service = content_ptr;
-  server->state = BUSY;
+    server->customer_in_service = content_ptr;
+    server->state = BUSY;
 }
 
 /*
@@ -532,30 +475,26 @@ server_put(Server_Ptr server, void* content_ptr)
  * be sure.
  */
 
-void *
-server_get(Server_Ptr server)
-{
-  void *entry;
+void *server_get(Server_Ptr server) {
+    void *entry;
 
-  if (server_state(server) == FREE) {
-      printf("Error: Cannot get from free server.\n");
-      exit(1);
+    if (server_state(server) == FREE) {
+        printf("Error: Cannot get from free server.\n");
+        exit(1);
     }
 
-  entry = server->customer_in_service;
-  server->customer_in_service = NULL;
-  server->state = FREE;
-  return entry;
+    entry = server->customer_in_service;
+    server->customer_in_service = NULL;
+    server->state = FREE;
+    return entry;
 }
 
 /*
  * Test if the server is FREE or BUSY.
  */
 
-Server_State
-server_state(Server_Ptr a_server)
-{
-  return(a_server->state);
+Server_State server_state(Server_Ptr a_server) {
+    return (a_server->state);
 }
 
 /*
@@ -567,22 +506,18 @@ server_state(Server_Ptr a_server)
  * generator streams (and seeds) at once.
  */
 
-Rand_Stream_Ptr
-rand_stream_new(unsigned seed)
-{
-  Rand_Stream_Ptr new_stream;
+Rand_Stream_Ptr rand_stream_new(unsigned seed) {
+    Rand_Stream_Ptr new_stream;
 
-  new_stream = (Rand_Stream_Ptr) xmalloc(sizeof(Rand_Stream));
-  rand_stream_initialize(new_stream, seed);
-  return new_stream;
+    new_stream = (Rand_Stream_Ptr) xmalloc(sizeof(Rand_Stream));
+    rand_stream_initialize(new_stream, seed);
+    return new_stream;
 }
 
-void
-rand_stream_initialize(Rand_Stream_Ptr rand_stream, unsigned seed)
-{
-  rand_stream->rand_max = 32767;
-  rand_stream->seed  = seed;
-  rand_stream->next = seed;
+void rand_stream_initialize(Rand_Stream_Ptr rand_stream, unsigned seed) {
+    rand_stream->rand_max = 32767;
+    rand_stream->seed = seed;
+    rand_stream->next = seed;
 }
 
 /*
@@ -590,120 +525,104 @@ rand_stream_initialize(Rand_Stream_Ptr rand_stream, unsigned seed)
  * is a pretty poor one but sufficient for our purposes.
  */
 
-unsigned
-rand_stream_get(Rand_Stream_Ptr rand_stream)
-{
-  rand_stream->next = rand_stream->next * 1103515245 + 12345;
-  return((unsigned)(rand_stream->next/65536) % rand_stream->rand_max);
+unsigned rand_stream_get(Rand_Stream_Ptr rand_stream) {
+    rand_stream->next = rand_stream->next * 1103515245 + 12345;
+    return ((unsigned) (rand_stream->next / 65536) % rand_stream->rand_max);
 }
 
-double
-rand_stream_uniform_generator(Rand_Stream_Ptr rand_stream)
-{
-  double r;
+double rand_stream_uniform_generator(Rand_Stream_Ptr rand_stream) {
+    double r;
 
-  do {
-    r = (double) rand_stream_get(rand_stream)/(double)rand_stream->rand_max;
-  } while (r == 1 || r == 0);
+    do {
+        r = (double) rand_stream_get(rand_stream) / (double) rand_stream->rand_max;
+    } while (r == 1 || r == 0);
 
-if (r > 1.0) {
-  printf ("***** ERROR: Random() out of bounds! ***** \n");
-  exit(0);
- } else return r;
+    if (r > 1.0) {
+        printf("***** ERROR: Random() out of bounds! ***** \n");
+        exit(0);
+    } else
+        return r;
 }
 
-double
-rand_stream_exponential_generator(Rand_Stream_Ptr rand_stream, double mean)
-{
-  double u = 0.0;
+double rand_stream_exponential_generator(Rand_Stream_Ptr rand_stream, double mean) {
+    double u = 0.0;
 
-  while (u == 0.0 || u == 1) u = rand_stream_uniform_generator(rand_stream);
-  return -1.0 * log(u) * mean;
+    while (u == 0.0 || u == 1)
+        u = rand_stream_uniform_generator(rand_stream);
+    return -1.0 * log(u) * mean;
 }
 
-void
-random_generator_initialize(unsigned iseed)
-{
-  srand(iseed);
+void random_generator_initialize(unsigned iseed) {
+    srand(iseed);
 }
 
 /*
  * Generate a random number uniformly distributed over (0, 1).
  */
 
-double
-uniform_generator(void)
-{
-  double r;
+double uniform_generator(void) {
+    double r;
 
-  do {
-    r = (double) rand()/(double) RAND_MAX;
-  } while (r == 1 || r == 0);
+    do {
+        r = (double) rand() / (double) RAND_MAX;
+    } while (r == 1 || r == 0);
 
-if (r > 1.0) {
-  printf ("***** ERROR: Random() out of bounds! ***** \n");
-  exit(0);
- } else return r;
+    if (r > 1.0) {
+        printf("***** ERROR: Random() out of bounds! ***** \n");
+        exit(0);
+    } else
+        return r;
 }
 
 /*
  * Generate exponentially distributed random numbers.
  */
 
-double
-exponential_generator(double mean)
-{
-  double u = 0.0;
+double exponential_generator(double mean) {
+    double u = 0.0;
 
-  while (u == 0.0 || u == 1) u = uniform_generator();
-  return -1.0 * log(u) * mean;
+    while (u == 0.0 || u == 1)
+        u = uniform_generator();
+    return -1.0 * log(u) * mean;
 }
 
 /*
  * Create a front-end fo malloc that performs out-of-memory testing.
  */
 
-void *
-xmalloc(unsigned size)
-{
-  void * a_ptr;
+void *xmalloc(unsigned size) {
+    void *a_ptr;
 
-  if((a_ptr = (void *) malloc(size)) != NULL) return a_ptr;
-  else {
-    printf("***** ERROR: Out of memory ***** \n");
-    exit(1);
-  }
+    if ((a_ptr = (void *) malloc(size)) != NULL)
+        return a_ptr;
+    else {
+        printf("***** ERROR: Out of memory ***** \n");
+        exit(1);
+    }
 }
 
 /*
  * Create a front-end fo calloc that performs out-of-memory testing.
  */
 
-void *
-xcalloc(unsigned num, unsigned size)
-{
-  void * a_ptr;
+void *xcalloc(unsigned num, unsigned size) {
+    void *a_ptr;
 
-  if((a_ptr = (void *) calloc(num, size)) != NULL) return a_ptr;
-  else {
-    printf(" ***** WARNING: Out of memory ***** \n");
-    exit(1);
-  }
+    if ((a_ptr = (void *) calloc(num, size)) != NULL)
+        return a_ptr;
+    else {
+        printf(" ***** WARNING: Out of memory ***** \n");
+        exit(1);
+    }
 }
 
 /*
  * Create a front-end for free that checks for null pointers.
  */
 
-void
-xfree(void * ptr)
-{
-  if(ptr == NULL) {
-    printf("Warning: Attempting to free a NULL pointer.\n");
-  }
-  else free(ptr);
+void xfree(void *ptr) {
+    if (ptr == NULL) {
+        printf("Warning: Attempting to free a NULL pointer.\n");
+    } else
+        free(ptr);
 }
-
-
-
-

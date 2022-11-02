@@ -32,7 +32,7 @@
 
 #define Call_ARRIVALRATE 3   /* calls/minute */
 #define MEAN_CALL_DURATION 3 /* minutes */
-#define RUNLENGTH 5e6 /* number of successful calls */
+#define RUNLENGTH 5e6        /* number of successful calls */
 #define BLIPRATE 1e3
 #define NUMBER_OF_CHANNELS 11
 
@@ -44,7 +44,3 @@
 /*******************************************************************************/
 
 #endif /* simparameters.h */
-
-
-
-

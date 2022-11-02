@@ -66,20 +66,48 @@ void call_arrival_event(Simulation_Run_Ptr simulation_run, void *ptr) {
 
     /* See if there is a free channel.*/
     if ((free_channel = get_free_channel(simulation_run)) != NULL) {
+        int queue_size;
+        if ((queue_size = fifoqueue_size(sim_data->buffer)) > 0) {
+            for (int i = 0; i < queue_size; ++i) {
+                new_call = (Call_Ptr) fifoqueue_get(sim_data->buffer);
 
-        /* Yes, we found one. Allocate some memory and start the call. */
-        new_call = (Call_Ptr) xmalloc(sizeof(Call));
+                if (new_call->hang_up_time < now) {
+                    sim_data->call_hung_up_count++;
+                    sim_data->accumulated_queue_wait_time += new_call->hang_up_time - new_call->arrive_time;
+                    xfree((void *) new_call);
+                    new_call = NULL;
+                    continue;
+                }
+
+                sim_data->accumulated_queue_wait_time += now - new_call->arrive_time;
+                break;
+            }
+
+            // If the queue only contains customers that have hung up, we need to allocate some memory for the new call
+            if (new_call == NULL) {
+                new_call = (Call_Ptr) xmalloc(sizeof(Call));
+            }
+        } else {
+            /* Yes, we found one. Allocate some memory and start the call. */
+            new_call = (Call_Ptr) xmalloc(sizeof(Call));
+        }
+
         new_call->arrive_time = now;
         new_call->call_duration = get_call_duration();
 
-        /* Place the call in the free channel and schedule its departure. */
+        /* Place the call in the free channel and schedule its
+       departure. */
         server_put(free_channel, (void *) new_call);
         new_call->channel = free_channel;
 
         schedule_end_call_on_channel_event(simulation_run, now + new_call->call_duration, (void *) free_channel);
     } else {
-        /* No free channel was found. The call is blocked. */
-        sim_data->blocked_call_count++;
+        /* No free channel was found. The call is put into queue. */
+        new_call = (Call_Ptr) xmalloc(sizeof(Call));
+        new_call->arrive_time = now;
+        new_call->hang_up_time = now + exponential_generator((double) MEAN_HANG_UP_TIME);
+        fifoqueue_put(sim_data->buffer, (void *) new_call);
+        sim_data->total_num_of_queue++;
     }
 
     /* Schedule the next call arrival. */

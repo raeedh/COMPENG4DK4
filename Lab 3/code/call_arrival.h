@@ -40,21 +40,12 @@
  *
  */
 
-Server_Ptr
-get_free_channel(Simulation_Run_Ptr);
+Server_Ptr get_free_channel(Simulation_Run_Ptr);
 
-void
-call_arrival_event(Simulation_Run_Ptr, void *);
+void call_arrival_event(Simulation_Run_Ptr, void *);
 
-long int
-schedule_call_arrival_event(Simulation_Run_Ptr, double);
+long int schedule_call_arrival_event(Simulation_Run_Ptr, double);
 
 /*******************************************************************************/
 
 #endif /* call_arrival.h */
-
-
-
-
-
-
