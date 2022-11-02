@@ -25,7 +25,6 @@
 
 /*******************************************************************************/
 
-#include "cleanup.h"
 #include "main.h"
 #include "simlib.h"
 #include "simparameters.h"
