@@ -1,0 +1,89 @@
+\section*{Experiment 2}
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+		width = 0.9\textwidth,
+		% height = ,
+		xmin = 0.001, xmax = 1, xmode = log,
+		ymin = 0, ymax = 40,
+		ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=1
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	% \addlegendimage{empty legend}
+	% \addlegendentry{MEAN\_BACKOUT\_DURATION}
+	\addplot table [y=$mean5$, x=$arr$]{./data/exp2_10.dat};
+	\addplot table [y=$mean10$, x=$arr$]{./data/exp2_10.dat};
+	\addplot table [y=$mean20$, x=$arr$]{./data/exp2_10.dat};
+	\addlegendentry{5}
+	\addlegendentry{10}
+	\addlegendentry{20}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 2: Mean Delay vs. Packet Arrival Rate with 10 Stations}
+\label{fig:exp2_10}
+\end{figure}
+
+\begin{figure}[htp]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+			width = 0.9\textwidth,
+			% height = ,
+			xmin = 0.001, xmax = 1, xmode = log,
+			ymin = 0, ymax = 40,
+			ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+			xticklabel style={
+			/pgf/number format/fixed,
+			/pgf/number format/precision=3
+			},
+			scaled x ticks=false,
+			yticklabel style={
+			/pgf/number format/fixed,
+			/pgf/number format/precision=1
+			},
+			scaled y ticks=false,
+			legend pos=north west,
+			% some code for adding points
+			%nodes near coords={%
+			%\footnotesize
+			%$(\pgfmathprintnumber
+			%{\pgfkeysvalueof{/data point/x}},
+			%\pgfmathprintnumber
+			%{\pgfkeysvalueof{/data point/y}})$%
+			%},
+		]
+		% \addlegendimage{empty legend}
+		% \addlegendentry{MEAN\_BACKOUT\_DURATION}
+		\addplot table [y=$mean3$, x=$arr$]{./data/exp2_5.dat};
+		\addplot table [y=$mean5$, x=$arr$]{./data/exp2_5.dat};
+		\addplot table [y=$mean7$, x=$arr$]{./data/exp2_5.dat};
+		\addlegendentry{5}
+		\addlegendentry{10}
+		\addlegendentry{20}
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Experiment 2: Mean Delay vs. Packet Arrival Rate with 5 Stations}
+	\label{fig:exp2_5}
+\end{figure}
