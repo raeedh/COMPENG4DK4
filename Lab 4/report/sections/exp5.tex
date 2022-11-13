@@ -1,43 +1,59 @@
-\section*{Experiment 3}
+\section*{Experiment 5}
+To implement the Slotted-ALOHA protocol, the packet arrival, packet transmission start and packet transmission backoff events were modified to only begin at $\epsilon$ seconds after or before time slot boundaries, and the binary exponential backoff from Part 3 was modified to equal a multiple of the slot duration. The modifications for the packet events can be seen in Listings~\ref{list:exp5_arrival}--\ref{list:exp5_end}. The simulations were performed with $\epsilon = 0.01$ with a slot duration of 1.02 seconds. 
+
+\begin{lstlisting}[language=c,caption=Packet Arrival, label=list:exp5_arrival]
+next_slot = SLOT_DURATION * ceil(simulation_run_get_time(simulation_run) / SLOT_DURATION) + EPSILON;sion_start_event(simulation_run, now + backoff_duration, (void *) this_packet);
+\end{lstlisting}
+
+\begin{lstlisting}[language=c,caption=Packet Transmission Start, label=list:exp5_start]
+/* Schedule the end of packet transmission event. */
+schedule_transmission_end_event(simulation_run, SLOT_DURATION * ceil((simulation_run_get_time(simulation_run) + this_packet->service_time) / SLOT_DURATION) - EPSILON, (void *) this_packet);
+\end{lstlisting}
+
+\begin{lstlisting}[language=c,caption=Packet Transmission Backoff, label=list:exp5_end]
+backoff_duration = SLOT_DURATION * ceil(uniform_generator()*pow(2.0, this_packet->collision_count));
+\end{lstlisting}
+
+The plot of the mean delay versus arrival rate for 5 and 10 stations can be seen in Figure~\ref{fig:exp5}. The curves display very similar behaviour, with the mean delay with 10 stations being larger as the packet arrival rate increases. Compared to the performance of the system in Part 3, as the arrival rate increases the performances begin to converge, but the initial mean delay begins at a mean delay of 1.5 instead of 1 due the overhead of $\epsilon$. To negate this effect, we tried smaller values of $\epsilon$ but found that very small values of $\epsilon$ were susceptible to causing a large number of collisions ultimately increasing the mean delay significantly.
 
 \begin{figure}[htp]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
-			width = 0.9\textwidth,
-			height = 600,
-			xmin = 0.001, xmax = 1, xmode = log,
-			ymin = 0, ymax = 10,
-			ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
-			xticklabel style={
-			/pgf/number format/fixed,
-			/pgf/number format/precision=3
-			},
-			scaled x ticks=false,
-			yticklabel style={
-			/pgf/number format/fixed,
-			/pgf/number format/precision=1
-			},
-			scaled y ticks=false,
-			legend pos=north west,
-			% some code for adding points
-			%nodes near coords={%
-			%\footnotesize
-			%$(\pgfmathprintnumber
-			%{\pgfkeysvalueof{/data point/x}},
-			%\pgfmathprintnumber
-			%{\pgfkeysvalueof{/data point/y}})$%
-			%},
-		]
-		% \addlegendimage{empty legend}
-		% \addlegendentry{MEAN\_BACKOUT\_DURATION}
-		\addplot table [y=$mean5$, x=$arr$]{./data/exp5.dat};
-		\addplot table [y=$mean10$, x=$arr$]{./data/exp5.dat};
-		\addlegendentry{5}
-		\addlegendentry{10}
-		\end{axis}
-	\end{tikzpicture}
-	\caption{Experiment 5: Mean Delay vs. Packet Arrival Rate}
-	\label{fig:exp5}
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+		width = 0.98\textwidth,
+		% height = 600,
+		xmin = 0.001, xmax = 1, xmode = log,
+		ymin = 0, ymax = 10,
+		ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=1
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	% \addlegendimage{empty legend}
+	% \addlegendentry{MEAN\_BACKOUT\_DURATION}
+	\addplot table [y=$mean5$, x=$arr$]{./data/exp5.dat};
+	\addplot table [y=$mean10$, x=$arr$]{./data/exp5.dat};
+	\addlegendentry{5 Stations}
+	\addlegendentry{10 Stations}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 5: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp5}
 \end{figure}
