@@ -1,47 +1,60 @@
 \section*{Experiment 4}
+To modify the simulation from Part 3 so that one particular station always re-transmits an un-
+successful packet in the very next slot, the packet transmission code was modified so it would schedule the start transmission event immediately if the station ID matched the one that was set to persist, and backoff like in Part 3 otherwise. The listing for the modified code can be seen in Listing~\ref{list:exp4}.
+
+\begin{lstlisting}[language=c,caption=Binary Exponential Backoff with Single Persisting Channel, label=list:exp4]
+if (this_packet->station_id == 0) {
+	schedule_transmission_start_event(simulation_run, now, (void *) this_packet);
+} else {
+	backoff_duration = uniform_generator() * pow(2.0, this_packet->collision_count);
+	schedule_transmission_start_event(simulation_run, now + backoff_duration, (void *) this_packet);
+}
+\end{lstlisting}
+
+The mean delay versus arrival rate curves for the persisting station, and the remaining channels can be seen in Figure~\ref{fig:exp4}. The behaviour for the other stations as the total number of stations match the behaviour seen in Part 3, however the mean delay for these stations at each packet arrival rate is slightly higher than the ones seen in Part 3. For the station that will always persist, the mean delay is significantly lower than the other stations, and will hit a peak mean delay before beginning to plateau instead of experiencing exponential growth in the mean delay like the other stations.
 
 \begin{figure}[htp]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
-			width = 0.9\textwidth,
-			height = 600,
-			xmin = 0.001, xmax = 1, xmode = log,
-			ymin = 0, ymax = 10,
-			ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
-			xticklabel style={
-			/pgf/number format/fixed,
-			/pgf/number format/precision=3
-			},
-			scaled x ticks=false,
-			yticklabel style={
-			/pgf/number format/fixed,
-			/pgf/number format/precision=1
-			},
-			scaled y ticks=false,
-			legend pos=north west,
-			% some code for adding points
-			%nodes near coords={%
-			%\footnotesize
-			%$(\pgfmathprintnumber
-			%{\pgfkeysvalueof{/data point/x}},
-			%\pgfmathprintnumber
-			%{\pgfkeysvalueof{/data point/y}})$%
-			%},
-		]
-		% \addlegendimage{empty legend}
-		% \addlegendentry{MEAN\_BACKOUT\_DURATION}
-		\addplot table [y=$mean5$, x=$arr$]{./data/exp4.dat};
-		\addplot table [y=$mean5_s0$, x=$arr$]{./data/exp4.dat};
-		\addplot table [y=$mean10$, x=$arr$]{./data/exp4.dat};
-		\addplot table [y=$mean10_s0$, x=$arr$]{./data/exp4.dat};
-		\addlegendentry{5}
-		\addlegendentry{5, Station 0}
-		\addlegendentry{10}
-		\addlegendentry{10, Station 0}
-		\end{axis}
-	\end{tikzpicture}
-	\caption{Experiment 4: Mean Delay vs. Packet Arrival Rate}
-	\label{fig:exp4}
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+		width = 0.98\textwidth,
+		% height = 600,
+		xmin = 0.001, xmax = 1, xmode = log,
+		ymin = 0, ymax = 10,
+		ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=1
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	% \addlegendimage{empty legend}
+	% \addlegendentry{MEAN\_BACKOUT\_DURATION}
+	\addplot table [y=$mean5$, x=$arr$]{./data/exp4.dat};
+	\addplot table [y=$mean5_s0$, x=$arr$]{./data/exp4.dat};
+	\addplot table [y=$mean10$, x=$arr$]{./data/exp4.dat};
+	\addplot table [y=$mean10_s0$, x=$arr$]{./data/exp4.dat};
+	\addlegendentry{5 Stations (Excluding Station 0)}
+	\addlegendentry{5 Stations (Only Station 0)}
+	\addlegendentry{10 Station (Excluding Station 0)}
+	\addlegendentry{10 Stations (Only Station 0)}
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 4: Mean Delay vs. Packet Arrival Rate}
+\label{fig:exp4}
 \end{figure}

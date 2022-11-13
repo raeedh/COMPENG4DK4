@@ -147,7 +147,7 @@ void transmission_end_event(Simulation_Run_Ptr simulation_run, void *packet) {
         if (this_packet->station_id == 1) {
             schedule_transmission_start_event(simulation_run, now, (void *) this_packet);
         } else {
-            backoff_duration = 2.0 * uniform_generator() * MEAN_BACKOFF_DURATION;
+            backoff_duration = uniform_generator() * pow(2.0, this_packet->collision_count);
             schedule_transmission_start_event(simulation_run, now + backoff_duration, (void *) this_packet);
         }
     }
