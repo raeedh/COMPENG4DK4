@@ -72,9 +72,8 @@ transmission_start_event(Simulation_Run_Ptr simulation_run, void * ptr)
 
   /* Schedule the end of packet transmission event. */
   schedule_transmission_end_event(simulation_run,
-				  SLOT_DURATION * ceil(
-          (simulation_run_get_time(simulation_run) + this_packet->service_time) / SLOT_DURATION)
-          - EPSILON,
+				  SLOT_DURATION * ceil((simulation_run_get_time(simulation_run) 
+          + this_packet->service_time) / SLOT_DURATION) - EPSILON,
 				  (void *) this_packet);
 }
 
@@ -165,8 +164,9 @@ transmission_end_event(Simulation_Run_Ptr simulation_run, void * packet)
       set_channel_state(channel, IDLE);
     }
 
-    backoff_duration = 2.0*uniform_generator() * MEAN_BACKOFF_DURATION;
-    // backoff_duration = SLOT_DURATION * ceil(2.0*uniform_generator());
+    backoff_duration = SLOT_DURATION * ceil(uniform_generator()*pow(2.0, this_packet->collision_count));
+    // backoff_duration = 2.0*uniform_generator() * MEAN_BACKOFF_DURATION;
+    // backoff_duration = SLOT_DURATION * (ceil(10.0*uniform_generator()) + 10);
 
     schedule_transmission_start_event(simulation_run,
 				      now + backoff_duration,
