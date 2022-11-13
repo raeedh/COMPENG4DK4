@@ -101,7 +101,7 @@ main(void)
   }
 
   /* Pause before finishing. */
-  getchar();
+//  getchar();
 
   return 0;
 }
