@@ -1,6 +1,6 @@
 
 /*
- * Simulation of the ALOHA Protocol
+ * Simulation_Run of the ALOHA Protocol
  * 
  * Copyright (C) 2014 Terence D. Todd Hamilton, Ontario, CANADA
  * todd@mcmaster.ca
@@ -17,29 +17,28 @@
  * 
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 /*******************************************************************************/
 
-#ifndef _SIMPARAMETERS_H_
-#define _SIMPARAMETERS_H_
+#ifndef _PACKET_ARRIVAL_H_
+#define _PACKET_ARRIVAL_H_
 
 /*******************************************************************************/
 
-#define NUMBER_OF_STATIONS 10
-#define MEAN_PACKET_DURATION 1      /* normalized packet Tx time */
-#define PACKET_ARRIVAL_RATE 0.1     /* packets per Tx time */
-#define MEAN_BACKOFF_DURATION 10    /* in units of packet transmit time, Tx */
-#define RUNLENGTH 70000000
-#define BLIPRATE 10000000
+/*
+ * Function prototypes
+ */
 
-/* Comma separated list of random seeds to run. */
-#define RANDOM_SEED_LIST 400188200, 1882004, 18820040, 188200400, 400190637, 1906374, 19063740, 190637400
+void
+packet_arrival_event(Simulation_Run_Ptr, void *);
+
+long int
+schedule_packet_arrival_event(Simulation_Run_Ptr, Time);
 
 /*******************************************************************************/
 
-#endif /* simparameters.h */
+#endif /* packet_arrival.h */
 
 
 
