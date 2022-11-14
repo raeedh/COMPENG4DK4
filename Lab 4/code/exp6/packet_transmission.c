@@ -115,6 +115,10 @@ void transmission_end_event(Simulation_Run_Ptr simulation_run, void *packet) {
 
         output_blip_to_screen(simulation_run);
 
+        /* We're done with this packet in the s-aloha channel, so remove it from the station queue, but we are not done with it in the data
+         * channel so don't free it*/
+        fifoqueue_get(buffer);
+
         /* See if there is another packet at this station. If so, enable it for transmission. We will transmit immediately. */
         if (fifoqueue_size(buffer) > 0) {
             next_packet = fifoqueue_see_front(buffer);
@@ -231,11 +235,11 @@ void data_transmission_end_event(Simulation_Run_Ptr simulation_run, void *packet
     output_blip_to_screen(simulation_run);
 
     /* This packet is done. */
-    free((void *) fifoqueue_get(data_buffer));
+    free((void *) packet);
 
     /* See if there is another packet in the data channel queue. If so, enable it for transmission. We will transmit immediately. */
     if (fifoqueue_size(data_buffer) > 0) {
-        next_packet = fifoqueue_see_front(data_buffer);
+        next_packet = fifoqueue_get(data_buffer);
 
         schedule_data_transmission_start_event(simulation_run, now, (void *) next_packet);
     }
