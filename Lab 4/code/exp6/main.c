@@ -84,6 +84,8 @@ main(void)
     data.s_aloha_channel = channel_new();
     data.data_channel = channel_new();
 
+    data.data_channel_queue = fifoqueue_new();
+
     /* Schedule initial packet arrival. */
     schedule_packet_arrival_event(simulation_run, 
 		    simulation_run_get_time(simulation_run) +

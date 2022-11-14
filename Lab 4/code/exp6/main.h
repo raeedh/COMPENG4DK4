@@ -68,6 +68,7 @@ typedef struct _simulation_run_data_
   Station_Ptr stations;
   Channel_Ptr s_aloha_channel;
   Channel_Ptr data_channel;
+  Buffer_Ptr data_channel_queue;
   long int blip_counter;
   long int arrival_count;
   long int packets_processed;
