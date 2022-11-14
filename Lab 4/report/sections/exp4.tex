@@ -1,6 +1,5 @@
 \section*{Experiment 4}
-To modify the simulation from Part 3 so that one particular station always re-transmits an un-
-successful packet in the very next slot, the packet transmission code was modified so it would schedule the start transmission event immediately if the station ID matched the one that was set to persist, and backoff like in Part 3 otherwise. The listing for the modified code can be seen in Listing~\ref{list:exp4}.
+To modify the simulation from Part 3 so that one particular station always re-transmits an un-successful packet in the very next slot, the packet transmission code was modified so it would schedule the start transmission event immediately if the station ID matched the one that was set to persist, and backoff like in Part 3 otherwise. The listing for the modified code can be seen in Listing~\ref{list:exp4}.
 
 \begin{lstlisting}[language=c,caption=Binary Exponential Backoff with Single Persisting Channel, label=list:exp4]
 if (this_packet->station_id == 0) {
