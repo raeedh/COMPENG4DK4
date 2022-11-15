@@ -54,6 +54,7 @@ The mean delay versus packet arrival rate curve can be seen in Figure~\ref{fig:e
 
 The mean delay versus packet arrival rate curve can be seen in Figure~\ref{fig:exp6_xr}. The number of stations was set to 10 stations, the mean data packet duration, $X$, was set to 1 second, and the slot duration, $X_r$, was set to 0.1 seconds. The mean delay experiences exponential increase as the mean data packet duration increases.
 
+The capacity versus ratios of $X / X_r$ can be seen in Figure~\ref{fig:exp6_capacity}. The number of stations was set to 10 stations, and the packet arrival rate was set to 0.05. We can see for low values of $X / X_r$, the capacity is equal to the packet arrival rate as all packets that arrive get transmitted without any noticeable overhead due to the S-ALOHA reservation channel. As the ratio of $X / X_r$ crosses a certain threshold (20 in our scenario), the capacity of the system begins to decrease as the bottleneck becomes the rate at which the data packets can be transmitted rather than the reservations.
 
 \begin{figure}[h]
 \centering
@@ -187,6 +188,43 @@ The mean delay versus packet arrival rate curve can be seen in Figure~\ref{fig:e
 	\addplot table [y=$delay$, x=$xr$]{./data/exp6_xr.dat};
 	\end{axis}
 \end{tikzpicture}
-\caption{Experiment 6: Mean Delay vs. Slot Duration, $X_r$}
+\caption{Experiment 6: Capacity vs. Slot Duration, $X_r$}
 \label{fig:exp6_xr}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Capacity vs. $X / X_r$},
+		width = 0.98\textwidth,
+		% height = 200,
+		xmin = 0, xmax = 30,
+		ymin = 0, ymax = 0.06,
+		ylabel = Capacity, xlabel = $X / X_r$,
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled y ticks=false,
+		% legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	\addplot table [y=$capacity$, x=$ratio$]{./data/exp6_capacity.dat};
+	\end{axis}
+\end{tikzpicture}
+\caption{Experiment 6: Capacity vs. $X / X_r$}
+\label{fig:exp6_capacity}
 \end{figure}
