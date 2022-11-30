@@ -27,13 +27,14 @@
 
 /*******************************************************************************/
 
-#define NUMBER_OF_STATIONS 10
-#define MEAN_DATA_PACKET_DURATION 100      /* normalized packet Tx time */
-#define PACKET_ARRIVAL_RATE 0.05     /* packets per Tx time */
+// #define NUMBER_OF_STATIONS 10
+#define MEAN_STATION_SERVICE_TIME 1      /* normalized packet Tx time */
+#define MEAN_SERVER_SERVICE_TIME 1
+#define PACKET_ARRIVAL_RATE 0.085     /* packets per Tx time */
 #define RUNLENGTH 70000000
 #define BLIPRATE 10000000
-#define EPSILON 0.01
-#define SLOT_DURATION (0.98 + EPSILON * 2)
+// #define EPSILON 0.01
+// #define SLOT_DURATION (0.98 + EPSILON * 2)
 
 /* Comma separated list of random seeds to run. */
 #define RANDOM_SEED_LIST 400188200, 1882004, 18820040, 188200400, 400190637, 1906374, 19063740, 190637400

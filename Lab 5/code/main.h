@@ -53,27 +53,34 @@ typedef struct _station_
 /**********************************************************************/
 
 typedef enum {WAITING, TRANSMITTING} Packet_Status;
+typedef enum {DEVICE_G, DEVICE_B} Device_Id;
 
 typedef struct _packet_ 
 {
   double arrive_time;
   double service_time;
-  int station_id;
+  // int station_id;
   Packet_Status status;
-  int collision_count;
+  Device_Id device_id;
+  // int collision_count;
 } Packet, * Packet_Ptr;
 
 typedef struct _simulation_run_data_
 {
-  Station_Ptr stations;
-  Channel_Ptr s_aloha_channel;
-  Channel_Ptr data_channel;
-  Buffer_Ptr data_channel_queue;
+  // Station_Ptr stations;
+  // Channel_Ptr s_aloha_channel;
+  // Channel_Ptr data_channel;
+  Buffer_Ptr station_queue;
+  Buffer_Ptr server_queue;
   long int blip_counter;
   long int arrival_count;
   long int packets_processed;
   long int number_of_packets_processed;
-  long int number_of_collisions;
+  // long int number_of_collisions;
+  long int g_processed;
+  double g_delay;
+  long int b_processed;
+  double b_delay;
   double accumulated_delay;
   unsigned random_seed;
 } Simulation_Run_Data, * Simulation_Run_Data_Ptr;

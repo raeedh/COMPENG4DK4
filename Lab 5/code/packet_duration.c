@@ -29,6 +29,7 @@
 double
 get_data_packet_duration(void)
 {
-    return ((double) exponential_generator(MEAN_DATA_PACKET_DURATION));
+    // return ((double) exponential_generator(MEAN_DATA_PACKET_DURATION));
+    return MEAN_SERVER_SERVICE_TIME;
 }
 

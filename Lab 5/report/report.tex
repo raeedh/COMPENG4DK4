@@ -1,0 +1,223 @@
+\documentclass[12pt]{article}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\graphicspath{{./figures/}}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,   
+    urlcolor=blue,
+}
+\usepackage{parskip}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat = newest}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{lstautogobble}
+\usepackage[framed, numbered]{matlab-prettifier}
+\usetikzlibrary{intersections}
+
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+\lstset{
+    frame=single,
+    breaklines=true,
+    numbers=left,
+    tabsize=4,
+    backgroundcolor=\color{backgroundColour},
+    keywordstyle=\color{red},
+    identifierstyle=\color{blue},
+    commentstyle=\color{gray}}
+
+\titleformat*{\section}{\large\bfseries}
+%\allowdisplaybreaks
+
+% remove vertical spacing above top figure
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+%
+
+\title{COMPENG 4DK4 Lab 5 Report}
+\author{
+    Aaron Pinto \\
+    pintoa9 \\
+    %L02
+    \and
+    Raeed Hassan \\
+    hassam41 \\
+    %L02
+}
+
+\begin{document}
+
+\maketitle
+\clearpage
+
+\input{sections/random_seeds.tex}
+
+\section*{Experiment 1}
+
+The simulation was created using the \texttt{simlib} library and existing functions from Lab 4. The Lab 4 Experiment 6 code featuring two channels (a reservation channel and data transmission channel) was re-used with the reservation channel being changed to feature a regular transmission channel instead of an S-ALOHA channel, and the use of multiple stations/channels removed. Two packet arrival events were created, and initially ran in the main function to schedule the first job arrivals. The packet arrival event function for $M = G$ is shown in Listing~\ref{list:arrival}. The jobs are then placed into the station queue, and transmission on the station begins if the job is the only one in the queue. The end of transmission event is shown in Listing~\ref{list:station}, where jobs that finished transmission from the station are removed from the station queue, and put into the server queue for execution. Server execution occurs the same way transmission at the base station occurs. The end of server execution event is shown in Listing~\ref{list:server}.
+
+The simulation was run with $U_b = 10U_g = 10, U_g = 1, J_g = J_b = 1$. To determine the maximum arrival rate, $\lambda^*$, that can be supported for $d_{max} = 20$, the simulation was ran with increasing values of the arrival packet arrival rate $\lambda$. The mean delay versus $\lambda$ for both devices was plotted in Figure~\ref{fig:exp1}. For $d_{max} = 20$ and $U_b = 10, U_g = J_g = J_b = 1$, the maximum arrival rate, $\lambda^*$, is slightly above 0.06 (the mean delay for device B at $\lambda = 0.06$ is 19.9).
+
+\begin{figure}[htp]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {Mean Delay vs. \texttt{PACKET\_ARRIVAL\_RATE}},
+		width = 0.9\textwidth,
+		% height = ,
+		% restrict y to domain=0:1e3,
+		xmin = 0.001, xmax = 1, xmode = log,
+		ymin = 0, ymax = 50,
+		ylabel = Mean Delay, xlabel = \texttt{PACKET\_ARRIVAL\_RATE},
+		xticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=3
+		},
+		scaled x ticks=false,
+		yticklabel style={
+		/pgf/number format/fixed,
+		/pgf/number format/precision=1
+		},
+		scaled y ticks=false,
+		legend pos=north west,
+		% some code for adding points
+		%nodes near coords={%
+		%\footnotesize
+		%$(\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/x}},
+		%\pgfmathprintnumber
+		%{\pgfkeysvalueof{/data point/y}})$%
+		%},
+	]
+	% \addlegendimage{empty legend}
+	% \addlegendentry{MEAN\_BACKOUT\_DURATION}
+	\addplot +[mark=none, thick, name path=A] coordinates {(0.001, 20) (1, 20)}; \addlegendentry{$d_{max}$}
+
+	\addplot table [y=mb, x=arr]{./data/exp1.dat};
+	\addlegendentry{$M = B$}
+	\addplot table [y=mg, x=arr]{./data/exp1.dat};
+	\addlegendentry{$M = G$}
+\end{axis}
+\end{tikzpicture}
+\caption{Experiment 1}
+\label{fig:exp1}
+\end{figure}
+
+\clearpage
+
+\begin{lstlisting}[language=c,caption=Arrival Event, label=list:arrival]
+void
+packet_arrival_event_G(Simulation_Run_Ptr simulation_run, void* dummy_ptr) 
+{
+	Packet_Ptr new_packet;
+	Time now;
+	Simulation_Run_Data_Ptr data;
+
+	now = simulation_run_get_time(simulation_run);
+
+	data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+	data->arrival_count++;
+
+	new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
+	new_packet->arrive_time = now;
+	new_packet->service_time = MEAN_STATION_SERVICE_TIME;
+	new_packet->status = WAITING;
+	new_packet->device_id = DEVICE_G;
+
+	/* Put the packet in the buffer at station. */
+	fifoqueue_put(data->station_queue, (void *) new_packet);
+
+	/* If this is the only packet at the station, transmit it). 
+	It stays in the queue either way. */
+	if(fifoqueue_size(data->station_queue) == 1) {
+	/* Transmit the packet. */
+	schedule_transmission_start_event(simulation_run, now, (void *) new_packet);
+	}
+
+	/* Schedule the next packet arrival. */
+	schedule_packet_arrival_event_G(simulation_run, 
+		now + exponential_generator((double) 1/PACKET_ARRIVAL_RATE));
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=c,caption=Station Transmission Event, label=list:station]
+void transmission_end_event(Simulation_Run_Ptr simulation_run, void *packet) {
+    Packet_Ptr this_packet;
+    Time now;
+    Simulation_Run_Data_Ptr data;
+
+    data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+    now = simulation_run_get_time(simulation_run);
+
+    this_packet = (Packet_Ptr) packet;
+
+    TRACE(printf("Success.\n"););
+
+    output_blip_to_screen(simulation_run);
+
+    /* Remove job from station queue and put into server queue */
+    fifoqueue_get(data->station_queue);
+    fifoqueue_put(data->server_queue, (void *) this_packet);
+
+    if(fifoqueue_size(data->server_queue) == 1) {
+    /* Execute job on server. */
+        schedule_data_transmission_start_event(simulation_run, now, fifoqueue_get(data->server_queue));
+    }
+
+    /* Transmit next job in station queue if queue contains job */
+    if(fifoqueue_size(data->station_queue) > 0) {
+        schedule_transmission_start_event(simulation_run, now, fifoqueue_see_front(data->station_queue));
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=c,caption=Server Execution Event, label=list:server]
+void data_transmission_end_event(Simulation_Run_Ptr simulation_run, void *packet) {
+	Packet_Ptr this_packet, next_packet;
+	Time now;
+	Simulation_Run_Data_Ptr data;
+
+	data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+	now = simulation_run_get_time(simulation_run);
+
+	this_packet = (Packet_Ptr) packet;
+
+	TRACE(printf("Success.\n"););
+
+	/* Collect statistics. */
+	data->number_of_packets_processed++;
+
+	data->accumulated_delay += now - this_packet->arrive_time;
+	if (this_packet->device_id) {
+		data->b_delay += now - this_packet->arrive_time;
+		data->b_processed++;
+	} else {
+		data->g_delay += now - this_packet->arrive_time;
+		data->g_processed++;
+	}
+
+
+	output_blip_to_screen(simulation_run);
+
+	/* This packet is done. */
+	free((void *) packet);
+
+	/* See if there is another packet in the server queue. If so, begin execution. */
+	if (fifoqueue_size(data->server_queue) > 0) {
+		next_packet = fifoqueue_get(data->server_queue);
+
+		schedule_data_transmission_start_event(simulation_run, now, (void *) next_packet);
+	}
+}	
+\end{lstlisting}
+
+\end{document}

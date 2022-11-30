@@ -44,7 +44,7 @@ main(void)
 
   Simulation_Run_Ptr simulation_run;
   Simulation_Run_Data data;
-  int i, j=0;
+  int j=0;
 
   /* Do a new simulation_run for each random number generator seed. */
   while ((random_seed = RANDOM_SEEDS[j++]) != 0) {
@@ -60,34 +60,42 @@ main(void)
     simulation_run_set_data(simulation_run, (void *) & data);
 
     /* Create and initalize the stations. */
-    data.stations = (Station_Ptr) xcalloc((unsigned int) NUMBER_OF_STATIONS,
-					  sizeof(Station));
+    // data.stations = (Station_Ptr) xcalloc((unsigned int) NUMBER_OF_STATIONS,
+					  // sizeof(Station));
 
     /* Initialize various simulation_run variables. */
     data.blip_counter = 0;
     data.arrival_count = 0;
     data.number_of_packets_processed = 0;
-    data.number_of_collisions = 0;
+    // data.number_of_collisions = 0;
     data.accumulated_delay = 0.0;
+    data.g_processed = 0;
+    data.g_delay = 0.0;
+    data.b_processed = 0;
+    data.b_delay = 0.0;
     data.random_seed = random_seed;
     
-    /* Initialize the stations. */
-    for(i=0; i<NUMBER_OF_STATIONS; i++) {
-      (data.stations+i)->id = i;
-      (data.stations+i)->buffer = fifoqueue_new();
-      (data.stations+i)->packet_count = 0;
-      (data.stations+i)->accumulated_delay = 0.0;
-      (data.stations+i)->mean_delay = 0;
-    }
+    // /* Initialize the stations. */
+    // for(i=0; i<NUMBER_OF_STATIONS; i++) {
+      // (data.stations+i)->id = i;
+      // (data.stations+i)->buffer = fifoqueue_new();
+      // (data.stations+i)->packet_count = 0;
+      // (data.stations+i)->accumulated_delay = 0.0;
+      // (data.stations+i)->mean_delay = 0;
+    // }
 
     /* Create and initialize the channels. */
-    data.s_aloha_channel = channel_new();
-    data.data_channel = channel_new();
+    // data.s_aloha_channel = channel_new();
+    // data.data_channel = channel_new();
 
-    data.data_channel_queue = fifoqueue_new();
+    data.station_queue = fifoqueue_new();
+    data.server_queue = fifoqueue_new();
 
-    /* Schedule initial packet arrival. */
-    schedule_packet_arrival_event(simulation_run, 
+    /* Schedule initial packet arrivals. */
+    schedule_packet_arrival_event_G(simulation_run, 
+		    simulation_run_get_time(simulation_run) +
+		    exponential_generator((double) 1/PACKET_ARRIVAL_RATE));
+    schedule_packet_arrival_event_B(simulation_run, 
 		    simulation_run_get_time(simulation_run) +
 		    exponential_generator((double) 1/PACKET_ARRIVAL_RATE));
 

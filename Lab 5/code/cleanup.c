@@ -32,21 +32,21 @@
 void
 cleanup (Simulation_Run_Ptr simulation_run)
 {
-  Simulation_Run_Data_Ptr data;
-  int i;
+  // Simulation_Run_Data_Ptr data;
+  // int i;
 
-  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+  // data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
 
   /* Clean out the stations. */
-  for(i=0; i<NUMBER_OF_STATIONS; i++) {
-    while (fifoqueue_size((data->stations+i)->buffer) > 0) {
-      xfree(fifoqueue_get((data->stations+i)->buffer));
-    }
-  }
-  xfree(data->stations);
+  // for(i=0; i<NUMBER_OF_STATIONS; i++) {
+    // while (fifoqueue_size((data->stations+i)->buffer) > 0) {
+      // xfree(fifoqueue_get((data->stations+i)->buffer));
+    // }
+  // }
+  // xfree(data->stations);
 
   /* Clean out the s_aloha_channel. */
-  xfree(data->s_aloha_channel);
+  // xfree(data->s_aloha_channel);
 
   /* Clean up the simulation_run. */
   simulation_run_free_memory(simulation_run);

@@ -62,7 +62,7 @@ output_blip_to_screen(Simulation_Run_Ptr simulation_run)
 
 void output_results(Simulation_Run_Ptr this_simulation_run)
 {
-  int i;
+  // int i;
   double xmtted_fraction;
   Simulation_Run_Data_Ptr sim_data;
 
@@ -81,16 +81,26 @@ void output_results(Simulation_Run_Ptr this_simulation_run)
   printf("Mean Delay   = %.1f \n",
 	 sim_data->accumulated_delay/sim_data->number_of_packets_processed);
 
-  printf("Mean collisions per packet = %.3f\n",
-	 (double) sim_data->number_of_collisions / 
-	 sim_data->number_of_packets_processed);
+  printf("B jobs executed = %ld \n", sim_data->b_processed);
 
-  for(i=0; i<NUMBER_OF_STATIONS; i++) {
+  printf("Mean Delay for B   = %.1f \n",
+	 sim_data->b_delay/sim_data->b_processed);
 
-    printf("Station %2i Mean Delay = %8.1f \n", i,
-	   (sim_data->stations+i)->accumulated_delay / 
-	   (sim_data->stations+i)->packet_count);
-  }
+  printf("G jobs executed = %ld \n", sim_data->g_processed);
+
+  printf("Mean Delay for G   = %.1f \n",
+	 sim_data->g_delay/sim_data->g_processed);
+
+  // printf("Mean collisions per packet = %.3f\n",
+	//  (double) sim_data->number_of_collisions / 
+	//  sim_data->number_of_packets_processed);
+
+  // for(i=0; i<NUMBER_OF_STATIONS; i++) {
+
+  //   printf("Station %2i Mean Delay = %8.1f \n", i,
+	//    (sim_data->stations+i)->accumulated_delay / 
+	//    (sim_data->stations+i)->packet_count);
+  // }
   printf("\n\n");
 }
 

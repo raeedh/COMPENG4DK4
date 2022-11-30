@@ -31,10 +31,16 @@
  */
 
 void
-packet_arrival_event(Simulation_Run_Ptr, void *);
+packet_arrival_event_G(Simulation_Run_Ptr, void *);
 
 long int
-schedule_packet_arrival_event(Simulation_Run_Ptr, Time);
+schedule_packet_arrival_event_G(Simulation_Run_Ptr, Time);
+
+void
+packet_arrival_event_B(Simulation_Run_Ptr, void *);
+
+long int
+schedule_packet_arrival_event_B(Simulation_Run_Ptr, Time);
 
 /*******************************************************************************/
 
